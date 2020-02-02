@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   json_annotation: 3.0.0
   rxdart: ^0.22.6
+  grouped_buttons: ^1.0.4
+
 
 
   cupertino_icons: ^0.1.2
