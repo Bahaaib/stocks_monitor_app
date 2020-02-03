@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stock_monitor/stock_add_page/stock_add_page.dart';
+import 'package:stock_monitor/stocks_page/stocks_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       routes: {
-        '/': (context) => StockAddPage(),
+        '/': (context) => StocksPage(),
       },
     );
   }
