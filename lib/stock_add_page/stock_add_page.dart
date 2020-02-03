@@ -24,6 +24,12 @@ class _StockAddPageState extends State<StockAddPage> {
     'Blue',
   ];
   int _index;
+  String _spinnerValue = 'Price';
+  final List<String> _targetNames = [
+    'Price',
+    'Change',
+    'Change%',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +79,8 @@ class _StockAddPageState extends State<StockAddPage> {
                   ),
                   Text(
                     'Category:',
-                    style: TextStyle(fontSize: 16.0),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16.0),
                   ),
                   SizedBox(
                     width: 10.0,
@@ -106,7 +113,8 @@ class _StockAddPageState extends State<StockAddPage> {
                 children: <Widget>[
                   Text(
                     'Color',
-                    style: TextStyle(fontSize: 16.0),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16.0),
                   ),
                   Container(
                     child: RadioButtonGroup(
@@ -126,6 +134,42 @@ class _StockAddPageState extends State<StockAddPage> {
                         setState(() {});
                       },
                     ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(right: 100.0, left: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      'Target Name',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                  ),
+                  DropdownButton<String>(
+                    value: _spinnerValue,
+                    icon: Icon(Icons.arrow_drop_down),
+                    iconSize: 24,
+                    elevation: 16,
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor, fontSize: 18),
+                    underline: Container(height: 2, color: Colors.black),
+                    onChanged: (String data) {
+                      setState(() {
+                        _spinnerValue = data;
+                      });
+                    },
+                    items: _targetNames
+                        .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),
@@ -312,7 +356,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     borderRadius: new BorderRadius.circular(20.0),
                     side: BorderSide(color: Theme.of(context).primaryColor),
                   ),
-                ))
+                )),
           ],
         ),
       ),
