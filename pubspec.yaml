@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   json_annotation: 3.0.0
   rxdart: ^0.22.6
+  get_it:
+  moor_flutter: ^1.4.0
   grouped_buttons: ^1.0.4
 
 
@@ -22,6 +24,7 @@ dev_dependencies:
     sdk: flutter
   json_serializable: ^3.2.3
   build_runner: any
+  moor_generator: ^1.4.0
 
 
 flutter:
