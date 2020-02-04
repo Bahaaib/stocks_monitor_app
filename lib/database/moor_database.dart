@@ -6,25 +6,25 @@ part 'moor_database.g.dart';
 class Stocks extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  TextColumn get symbol => text()();
+  TextColumn get symbol => text().withLength(min: 1)();
 
   IntColumn get categoryId => integer()();
 
-  TextColumn get color => text()();
+  TextColumn get color => text().withLength(min: 1)();
 
-  TextColumn get targetName => text()();
+  TextColumn get targetName => text().withLength(min: 1)();
 
-  TextColumn get buyTarget => text()();
+  TextColumn get buyTarget => text().withLength(min: 1)();
 
-  TextColumn get buyInterval => text()();
+  TextColumn get buyInterval => text().withLength(min: 1)();
 
-  TextColumn get sellTarget => text()();
+  TextColumn get sellTarget => text().withLength(min: 1)();
 
-  TextColumn get sellInterval => text()();
+  TextColumn get sellInterval => text().withLength(min: 1)();
 
-  TextColumn get sharesBought => text()();
+  TextColumn get sharesBought => text().withLength(min: 1)();
 
-  TextColumn get sharesSold => text()();
+  TextColumn get sharesSold => text().withLength(min: 1)();
 
   TextColumn get comments => text().nullable()();
 }

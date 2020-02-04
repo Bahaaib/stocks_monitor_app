@@ -21,7 +21,7 @@ class Stock extends DataClass implements Insertable<Stock> {
   final String sharesSold;
   final String comments;
   Stock(
-      {@required this.id,
+      {this.id,
       @required this.symbol,
       @required this.categoryId,
       @required this.color,
@@ -300,11 +300,7 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   @override
   GeneratedTextColumn get symbol => _symbol ??= _constructSymbol();
   GeneratedTextColumn _constructSymbol() {
-    return GeneratedTextColumn(
-      'symbol',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('symbol', $tableName, false, minTextLength: 1);
   }
 
   final VerificationMeta _categoryIdMeta = const VerificationMeta('categoryId');
@@ -324,11 +320,7 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   @override
   GeneratedTextColumn get color => _color ??= _constructColor();
   GeneratedTextColumn _constructColor() {
-    return GeneratedTextColumn(
-      'color',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('color', $tableName, false, minTextLength: 1);
   }
 
   final VerificationMeta _targetNameMeta = const VerificationMeta('targetName');
@@ -336,11 +328,8 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   @override
   GeneratedTextColumn get targetName => _targetName ??= _constructTargetName();
   GeneratedTextColumn _constructTargetName() {
-    return GeneratedTextColumn(
-      'target_name',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('target_name', $tableName, false,
+        minTextLength: 1);
   }
 
   final VerificationMeta _buyTargetMeta = const VerificationMeta('buyTarget');
@@ -348,11 +337,8 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   @override
   GeneratedTextColumn get buyTarget => _buyTarget ??= _constructBuyTarget();
   GeneratedTextColumn _constructBuyTarget() {
-    return GeneratedTextColumn(
-      'buy_target',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('buy_target', $tableName, false,
+        minTextLength: 1);
   }
 
   final VerificationMeta _buyIntervalMeta =
@@ -362,11 +348,8 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   GeneratedTextColumn get buyInterval =>
       _buyInterval ??= _constructBuyInterval();
   GeneratedTextColumn _constructBuyInterval() {
-    return GeneratedTextColumn(
-      'buy_interval',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('buy_interval', $tableName, false,
+        minTextLength: 1);
   }
 
   final VerificationMeta _sellTargetMeta = const VerificationMeta('sellTarget');
@@ -374,11 +357,8 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   @override
   GeneratedTextColumn get sellTarget => _sellTarget ??= _constructSellTarget();
   GeneratedTextColumn _constructSellTarget() {
-    return GeneratedTextColumn(
-      'sell_target',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('sell_target', $tableName, false,
+        minTextLength: 1);
   }
 
   final VerificationMeta _sellIntervalMeta =
@@ -388,11 +368,8 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   GeneratedTextColumn get sellInterval =>
       _sellInterval ??= _constructSellInterval();
   GeneratedTextColumn _constructSellInterval() {
-    return GeneratedTextColumn(
-      'sell_interval',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('sell_interval', $tableName, false,
+        minTextLength: 1);
   }
 
   final VerificationMeta _sharesBoughtMeta =
@@ -402,11 +379,8 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   GeneratedTextColumn get sharesBought =>
       _sharesBought ??= _constructSharesBought();
   GeneratedTextColumn _constructSharesBought() {
-    return GeneratedTextColumn(
-      'shares_bought',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('shares_bought', $tableName, false,
+        minTextLength: 1);
   }
 
   final VerificationMeta _sharesSoldMeta = const VerificationMeta('sharesSold');
@@ -414,11 +388,8 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
   @override
   GeneratedTextColumn get sharesSold => _sharesSold ??= _constructSharesSold();
   GeneratedTextColumn _constructSharesSold() {
-    return GeneratedTextColumn(
-      'shares_sold',
-      $tableName,
-      false,
-    );
+    return GeneratedTextColumn('shares_sold', $tableName, false,
+        minTextLength: 1);
   }
 
   final VerificationMeta _commentsMeta = const VerificationMeta('comments');

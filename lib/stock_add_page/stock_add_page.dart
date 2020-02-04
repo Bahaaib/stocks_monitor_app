@@ -18,7 +18,6 @@ class _StockAddPageState extends State<StockAddPage> {
   String _targetNameSpinnerValue = 'Price';
   int _index;
   ProgressDialog _progressDialog;
-  bool _isSavedSuccessful = false;
 
   final _symbolFieldController = TextEditingController();
   final _buyTargetFieldController = TextEditingController();
@@ -45,18 +44,14 @@ class _StockAddPageState extends State<StockAddPage> {
 
   @override
   void initState() {
-    _progressDialog = ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false, showLogs: false);
-    _initProgressDialog();
-
     _stocksBloc.stocksStateSubject.listen((receivedState) {
       if (receivedState is StockInserted) {
         if (receivedState.isSuccessful) {
-          print('STATE SUCCESS!');
-          if (_progressDialog.isShowing()) {
-            _progressDialog.dismiss();
-          }
+          _progressDialog.dismiss();
           _showSuccessDialog(context);
+        } else {
+          Navigator.of(context).pop();
+          _showErrorDialog(context);
         }
       }
     });
@@ -77,6 +72,9 @@ class _StockAddPageState extends State<StockAddPage> {
 
   @override
   Widget build(BuildContext context) {
+    _progressDialog = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    _initProgressDialog();
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Stock'),
@@ -103,6 +101,7 @@ class _StockAddPageState extends State<StockAddPage> {
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
                 child: TextField(
+                  autofocus: false,
                   textAlign: TextAlign.center,
                   controller: _symbolFieldController,
                   keyboardType: TextInputType.text,
@@ -394,9 +393,9 @@ class _StockAddPageState extends State<StockAddPage> {
                   margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   child: RaisedButton(
                     onPressed: () {
+                      _progressDialog.show();
                       _createStock();
                       _stocksBloc.dispatch(StockInsertRequested(_stock));
-                      _progressDialog.show();
                     },
                     color: Colors.white,
                     splashColor: Colors.green[100],
@@ -420,7 +419,7 @@ class _StockAddPageState extends State<StockAddPage> {
                       ),
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(20.0),
                       side: BorderSide(color: Theme.of(context).primaryColor),
                     ),
                   )),
@@ -447,6 +446,31 @@ class _StockAddPageState extends State<StockAddPage> {
           child: Center(
             child: Text(
               'Success',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+        titlePadding: EdgeInsets.all(0.0),
+      ),
+    );
+  }
+
+  _showErrorDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        content: Container(
+          height: 100.0,
+          child: Center(
+            child: Text('All fields are required'),
+          ),
+        ),
+        title: Container(
+          height: 50.0,
+          color: Colors.red,
+          child: Center(
+            child: Text(
+              'Error',
               style: TextStyle(color: Colors.white),
             ),
           ),

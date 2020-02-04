@@ -9,20 +9,38 @@ class StocksBloc extends BLoC<StocksEvent> {
   final _stockDatabase = GetIt.instance<StocksDatabase>();
 
   @override
-  void dispatch(StocksEvent event) async {
+  void dispatch(StocksEvent event) {
     if (event is StockInsertRequested) {
       _insertStockIntoDatabase(event.stock);
     }
   }
 
   Future<void> _insertStockIntoDatabase(Stock stock) async {
-    await _stockDatabase
+    print('inside BLOC');
+//    try {
+//      print('inside TRY');
+//
+//      await _stockDatabase.insertStock(stock);
+//      print('TRUE');
+//      stocksStateSubject.sink.add(StockInserted(true));
+//    } on Exception catch (_) {
+//      print('inside CATCH');
+//
+//      stocksStateSubject.sink.add(StockInserted(false));
+//    }
+
+    _stockDatabase
         .insertStock(stock)
-        .catchError((error) => print(error.toString()))
-        .whenComplete(() {
-          print('SUCESSFULL');
-      stocksStateSubject.sink.add(StockInserted(true));
-    });
+        .then((_) => stocksStateSubject.sink.add(StockInserted(true)))
+        .catchError((_) => stocksStateSubject.sink.add(StockInserted(false)));
+  }
+
+  //For debugging purposes
+  Future<void> _getAllStocks() async {
+    final List<Stock> stocks = await _stockDatabase.getAllStocks();
+    for (Stock stock in stocks) {
+      print('STOCK SYMBOL: ${stock.symbol} ==> ID: ${stock.id}');
+    }
   }
 
   void dispose() {
