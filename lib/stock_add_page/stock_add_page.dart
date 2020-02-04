@@ -13,11 +13,13 @@ class StockAddPage extends StatefulWidget {
 class _StockAddPageState extends State<StockAddPage> {
   final _stocksBloc = GetIt.instance<StocksBloc>();
   Stock _stock;
+  Stock _pickedStock;
   int _categoryId = 1;
   String _color;
   String _targetNameSpinnerValue = 'Price';
   int _index;
   ProgressDialog _progressDialog;
+  bool _isInit = true;
 
   final _symbolFieldController = TextEditingController();
   final _buyTargetFieldController = TextEditingController();
@@ -36,6 +38,8 @@ class _StockAddPageState extends State<StockAddPage> {
     'Green',
     'Blue',
   ];
+  String _pickedColor;
+  String _pickedCategoryId;
   final List<String> _targetNames = [
     'Price',
     'Change',
@@ -46,6 +50,20 @@ class _StockAddPageState extends State<StockAddPage> {
   void initState() {
     _stocksBloc.stocksStateSubject.listen((receivedState) {
       if (receivedState is StockInserted) {
+        print('STATE INSERT');
+        if (receivedState.isSuccessful) {
+          _progressDialog.dismiss();
+          _showSuccessDialog(context);
+        } else {
+          _progressDialog.dismiss();
+          Navigator.of(context).pop();
+          _showErrorDialog(context);
+        }
+      }
+
+      if (receivedState is StockIsUpdated) {
+        print('STATE UPDATE');
+
         if (receivedState.isSuccessful) {
           _progressDialog.dismiss();
           _showSuccessDialog(context);
@@ -56,6 +74,7 @@ class _StockAddPageState extends State<StockAddPage> {
         }
       }
     });
+
     super.initState();
   }
 
@@ -73,24 +92,56 @@ class _StockAddPageState extends State<StockAddPage> {
 
   @override
   Widget build(BuildContext context) {
+    final _args =
+        ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+    String _job = _args['job'];
+    _pickedStock = _args['stock'];
+
+    if (_job == 'update' && _isInit) {
+      _addInitialValues(_pickedStock);
+    }
+
     _progressDialog = ProgressDialog(context,
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
     _initProgressDialog();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Stock'),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(
-                Icons.check,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                _createStock();
-                _stocksBloc.dispatch(StockInsertRequested(_stock));
-                _progressDialog.show();
-              })
-        ],
+        title: Text(_job == 'add' ? 'Add Stock' : 'Update Stock'),
+        actions: _job == 'add'
+            ? <Widget>[
+                IconButton(
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      _createStock();
+                      _stocksBloc.dispatch(StockInsertRequested(_stock));
+                      _progressDialog.show();
+                    })
+              ]
+            : <Widget>[
+                IconButton(
+                    icon: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      _createStock();
+                      _stocksBloc.dispatch(StockInsertRequested(_stock));
+                      _progressDialog.show();
+                    }),
+                IconButton(
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      _updateStock();
+                      _stocksBloc.dispatch(StockUpdateRequested(_pickedStock));
+                      _progressDialog.show();
+                    }),
+              ],
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(
@@ -140,6 +191,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     RadioButtonGroup(
                       orientation: GroupedButtonsOrientation.HORIZONTAL,
                       labels: _categoriesList,
+                      picked: _categoryId.toString(),
                       itemBuilder: (Radio radio, Text text, int i) {
                         return Container(
                           width: 50.0,
@@ -154,6 +206,7 @@ class _StockAddPageState extends State<StockAddPage> {
                         setState(() {
                           _index = int.parse(value);
                           _categoryId = _index;
+                          _isInit = false;
                         });
                       },
                     ),
@@ -163,9 +216,10 @@ class _StockAddPageState extends State<StockAddPage> {
               Container(
                 margin: EdgeInsets.only(top: 10.0, left: 20.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Color',
+                      'Color:',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
@@ -173,6 +227,7 @@ class _StockAddPageState extends State<StockAddPage> {
                       child: RadioButtonGroup(
                         orientation: GroupedButtonsOrientation.HORIZONTAL,
                         labels: _colorsList,
+                        picked: _pickedColor,
                         itemBuilder: (Radio radio, Text text, int i) {
                           return Container(
                             width: 68.0,
@@ -186,6 +241,7 @@ class _StockAddPageState extends State<StockAddPage> {
                         onSelected: (value) {
                           setState(() {
                             _color = value;
+                            _pickedColor = null;
                           });
                         },
                       ),
@@ -390,13 +446,21 @@ class _StockAddPageState extends State<StockAddPage> {
                   ),
                 ),
               ),
+
               Container(
                   margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   child: RaisedButton(
                     onPressed: () {
-                      _progressDialog.show();
-                      _createStock();
-                      _stocksBloc.dispatch(StockInsertRequested(_stock));
+                      if (_job == 'add') {
+                        _progressDialog.show();
+                        _createStock();
+                        _stocksBloc.dispatch(StockInsertRequested(_stock));
+                      } else {
+                        _updateStock();
+                        _stocksBloc
+                            .dispatch(StockUpdateRequested(_pickedStock));
+                        _progressDialog.show();
+                      }
                     },
                     color: Colors.white,
                     splashColor: Colors.green[100],
@@ -407,7 +471,7 @@ class _StockAddPageState extends State<StockAddPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
                           Text(
-                            'Save',
+                            _job == 'add' ? 'Save' : 'Update',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green),
@@ -438,7 +502,10 @@ class _StockAddPageState extends State<StockAddPage> {
         content: Container(
           height: 100.0,
           child: Center(
-            child: Text('Data successfully saved!'),
+            child: Text(
+              'Operation completed successfully!',
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         title: Container(
@@ -494,5 +561,35 @@ class _StockAddPageState extends State<StockAddPage> {
         sharesBought: _sharesBoughtFieldController.text,
         sharesSold: _sharesSoldFieldController.text,
         comments: _commentsFieldController.text);
+  }
+
+  void _updateStock() {
+    _pickedStock = _pickedStock.copyWith(
+        symbol: _symbolFieldController.text.toUpperCase(),
+        categoryId: _categoryId,
+        color: _color,
+        targetName: _targetNameSpinnerValue,
+        buyTarget: _buyTargetFieldController.text,
+        buyInterval: _buyIntervalFieldController.text,
+        sellTarget: _sellTargetFieldController.text,
+        sellInterval: _sellIntervalFieldController.text,
+        sharesBought: _sharesBoughtFieldController.text,
+        sharesSold: _sharesSoldFieldController.text,
+        comments: _commentsFieldController.text);
+  }
+
+  void _addInitialValues(Stock stock) {
+    _symbolFieldController.text = stock.symbol;
+    _buyTargetFieldController.text = stock.buyTarget;
+    _buyIntervalFieldController.text = stock.buyInterval;
+    _sellTargetFieldController.text = stock.sellTarget;
+    _sellIntervalFieldController.text = stock.sellInterval;
+    _sharesBoughtFieldController.text = stock.sharesBought;
+    _sharesSoldFieldController.text = stock.sharesSold;
+    _commentsFieldController.text = stock.comments;
+
+    _pickedColor = stock.color;
+    _categoryId = stock.categoryId;
+    _targetNameSpinnerValue = stock.targetName;
   }
 }

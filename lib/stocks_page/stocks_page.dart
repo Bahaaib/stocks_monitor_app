@@ -34,6 +34,17 @@ class _StocksPageState extends State<StocksPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Stocks List'),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/add_stock_page',
+                    arguments: {'job': 'add'});
+              })
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -121,7 +132,7 @@ class _StocksPageState extends State<StocksPage> {
                         print(
                             'SELECTED STOCK SYMBOL: ${stock.symbol} ==> ${stock.id}');
                         Navigator.pushNamed(context, '/add_stock_page',
-                            arguments: {'stock': stock});
+                            arguments: {'job': 'update', 'stock': stock});
                       },
                     ),
                     Container(

@@ -9,3 +9,10 @@ class StockInsertRequested extends StocksEvent {
 }
 
 class AllStocksRequested extends StocksEvent{}
+
+class StockUpdateRequested extends StocksEvent{
+  final Stock stock;
+
+  StockUpdateRequested(this.stock);
+}
+

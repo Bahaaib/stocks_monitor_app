@@ -8,10 +8,15 @@ class StockInserted extends StocksState {
   StockInserted(this.isSuccessful);
 }
 
-class StocksAreFetched extends StocksState{
+class StocksAreFetched extends StocksState {
   final List<Stock> stocksList;
 
   StocksAreFetched(this.stocksList);
+}
 
+class StockIsUpdated extends StocksState {
+  bool isSuccessful;
+
+  StockIsUpdated(this.isSuccessful);
 
 }
