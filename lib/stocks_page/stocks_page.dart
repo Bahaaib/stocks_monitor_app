@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:stock_monitor/bloc/stocks/bloc.dart';
+import 'package:stock_monitor/bloc/stocks/stocks_bloc.dart';
+import 'package:stock_monitor/database/moor_database.dart';
 
 class StocksPage extends StatefulWidget {
   @override
@@ -7,21 +11,32 @@ class StocksPage extends StatefulWidget {
 }
 
 class _StocksPageState extends State<StocksPage> {
-  final List<String> _stockSymbols = [
-    'MSFT',
-    'APLT',
-    'AXSM',
-    'RLMD',
-    'CDLX',
-    'EVER',
-    'KRMD',
-    'CLSD',
-    'GSX',
-    'CTACW',
-  ];
+  final _stocksBloc = GetIt.instance<StocksBloc>();
+  final _stocksList = List<Stock>();
+  final _orderedStockSymbols = List<String>();
+
+  @override
+  void initState() {
+    _stocksBloc.stocksStateSubject.listen((receivedState) {
+      if (receivedState is StocksAreFetched) {
+        setState(() {
+          _stocksList.clear();
+          _stocksList.addAll(receivedState.stocksList);
+
+          _stocksList.forEach((stock) {
+            _orderedStockSymbols.add(stock.symbol);
+          });
+          _sortSymbolsAlphabetically();
+        });
+      }
+    });
+    super.initState();
+
+    _stocksBloc.dispatch(AllStocksRequested());
+  }
 
   void _sortSymbolsAlphabetically() {
-    _stockSymbols.sort((a, b) => a.compareTo(b));
+    _orderedStockSymbols.sort((a, b) => a.compareTo(b));
   }
 
   @override
@@ -100,17 +115,24 @@ class _StocksPageState extends State<StocksPage> {
               ],
             ),
             Table(
-              children: _stockSymbols.map((symbol) {
+              children: _stocksList.map((stock) {
                 return TableRow(
                   children: [
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text(symbol),
+                    InkWell(
+                      child: Container(
+                        height: 30.0,
+                        child: Center(
+                          child: Text(stock.symbol),
+                        ),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            color: Colors.grey),
                       ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
+                      onTap: () {
+                        print('SELECTED STOCK SYMBOL: ${stock.symbol} ==> ${stock.id}');
+                        Navigator.pushNamed(context, '/add_stock_page',
+                            arguments: {'stock': stock});
+                      },
                     ),
                     Container(
                       height: 30.0,

@@ -50,6 +50,7 @@ class _StockAddPageState extends State<StockAddPage> {
           _progressDialog.dismiss();
           _showSuccessDialog(context);
         } else {
+          _progressDialog.dismiss();
           Navigator.of(context).pop();
           _showErrorDialog(context);
         }

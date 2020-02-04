@@ -40,7 +40,6 @@ class StocksDatabase extends _$StocksDatabase {
   @override
   int get schemaVersion => 1;
 
-
   Future<List<Stock>> getAllStocks() => select(stocks).get();
 
   Stream<List<Stock>> watchAllStocks() => select(stocks).watch();
@@ -50,5 +49,14 @@ class StocksDatabase extends _$StocksDatabase {
   Future updateStock(Stock stock) => update(stocks).replace(stock);
 
   Future deleteStock(Stock stock) => delete(stocks).delete(stock);
-}
 
+  Future<List<Stock>> getAllStocksInAlphabeticalOrder() {
+    return (select(stocks)
+          ..orderBy(
+            ([
+              (t) => OrderingTerm(expression: t.symbol),
+            ]),
+          ))
+        .get();
+  }
+}

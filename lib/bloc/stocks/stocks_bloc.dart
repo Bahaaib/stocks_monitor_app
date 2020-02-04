@@ -13,34 +13,22 @@ class StocksBloc extends BLoC<StocksEvent> {
     if (event is StockInsertRequested) {
       _insertStockIntoDatabase(event.stock);
     }
+
+    if (event is AllStocksRequested) {
+      _getAllStocks();
+    }
   }
 
   Future<void> _insertStockIntoDatabase(Stock stock) async {
-    print('inside BLOC');
-//    try {
-//      print('inside TRY');
-//
-//      await _stockDatabase.insertStock(stock);
-//      print('TRUE');
-//      stocksStateSubject.sink.add(StockInserted(true));
-//    } on Exception catch (_) {
-//      print('inside CATCH');
-//
-//      stocksStateSubject.sink.add(StockInserted(false));
-//    }
-
     _stockDatabase
         .insertStock(stock)
         .then((_) => stocksStateSubject.sink.add(StockInserted(true)))
         .catchError((_) => stocksStateSubject.sink.add(StockInserted(false)));
   }
 
-  //For debugging purposes
   Future<void> _getAllStocks() async {
-    final List<Stock> stocks = await _stockDatabase.getAllStocks();
-    for (Stock stock in stocks) {
-      print('STOCK SYMBOL: ${stock.symbol} ==> ID: ${stock.id}');
-    }
+    final List<Stock> stocks = await _stockDatabase.getAllStocksInAlphabeticalOrder();
+    stocksStateSubject.sink.add(StocksAreFetched(stocks));
   }
 
   void dispose() {

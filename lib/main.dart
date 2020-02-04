@@ -20,7 +20,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       routes: {
-        '/': (context) => StockAddPage(),
+        '/': (context) => StocksPage(),
+        '/add_stock_page': (context) => StockAddPage(),
+
       },
     );
   }

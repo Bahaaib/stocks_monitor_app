@@ -7,3 +7,5 @@ class StockInsertRequested extends StocksEvent {
 
   StockInsertRequested(this.stock);
 }
+
+class AllStocksRequested extends StocksEvent{}
