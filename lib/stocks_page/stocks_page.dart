@@ -13,7 +13,6 @@ class StocksPage extends StatefulWidget {
 class _StocksPageState extends State<StocksPage> {
   final _stocksBloc = GetIt.instance<StocksBloc>();
   final _stocksList = List<Stock>();
-  final _orderedStockSymbols = List<String>();
 
   @override
   void initState() {
@@ -22,11 +21,6 @@ class _StocksPageState extends State<StocksPage> {
         setState(() {
           _stocksList.clear();
           _stocksList.addAll(receivedState.stocksList);
-
-          _stocksList.forEach((stock) {
-            _orderedStockSymbols.add(stock.symbol);
-          });
-          _sortSymbolsAlphabetically();
         });
       }
     });
@@ -35,13 +29,8 @@ class _StocksPageState extends State<StocksPage> {
     _stocksBloc.dispatch(AllStocksRequested());
   }
 
-  void _sortSymbolsAlphabetically() {
-    _orderedStockSymbols.sort((a, b) => a.compareTo(b));
-  }
-
   @override
   Widget build(BuildContext context) {
-    _sortSymbolsAlphabetically();
     return Scaffold(
       appBar: AppBar(
         title: Text('Stocks List'),
@@ -129,7 +118,8 @@ class _StocksPageState extends State<StocksPage> {
                             color: Colors.grey),
                       ),
                       onTap: () {
-                        print('SELECTED STOCK SYMBOL: ${stock.symbol} ==> ${stock.id}');
+                        print(
+                            'SELECTED STOCK SYMBOL: ${stock.symbol} ==> ${stock.id}');
                         Navigator.pushNamed(context, '/add_stock_page',
                             arguments: {'stock': stock});
                       },
