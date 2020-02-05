@@ -39,7 +39,6 @@ class _StockAddPageState extends State<StockAddPage> {
     'Blue',
   ];
   String _pickedColor;
-  String _pickedCategoryId;
   final List<String> _targetNames = [
     'Price',
     'Change',
@@ -67,6 +66,17 @@ class _StockAddPageState extends State<StockAddPage> {
         if (receivedState.isSuccessful) {
           _progressDialog.dismiss();
           _showSuccessDialog(context);
+        } else {
+          _progressDialog.dismiss();
+          Navigator.of(context).pop();
+          _showErrorDialog(context);
+        }
+      }
+
+      if (receivedState is StockIsDeleted) {
+        if (receivedState.isSuccessful) {
+          _progressDialog.dismiss();
+          Navigator.of(context).pop();
         } else {
           _progressDialog.dismiss();
           Navigator.of(context).pop();
@@ -127,8 +137,7 @@ class _StockAddPageState extends State<StockAddPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      _createStock();
-                      _stocksBloc.dispatch(StockInsertRequested(_stock));
+                      _stocksBloc.dispatch(StockDeleteRequested(_pickedStock));
                       _progressDialog.show();
                     }),
                 IconButton(
@@ -152,25 +161,37 @@ class _StockAddPageState extends State<StockAddPage> {
             children: <Widget>[
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  controller: _symbolFieldController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    hintText: 'Stock symbol, e.g. MSFT',
-                    hintStyle: TextStyle(fontSize: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0,
-                        style: BorderStyle.none,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Symbol:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 250.0,
+                      child: TextField(
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        controller: _symbolFieldController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          hintText: 'Stock symbol, e.g. MSFT',
+                          hintStyle: TextStyle(fontSize: 16.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
                       ),
                     ),
-                    filled: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
               Container(
@@ -287,163 +308,247 @@ class _StockAddPageState extends State<StockAddPage> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  controller: _buyTargetFieldController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Enter a buy target price, e.g. 180',
-                    hintStyle: TextStyle(fontSize: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0,
-                        style: BorderStyle.none,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Buy Target:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 220.0,
+                      child: TextField(
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        controller: _buyTargetFieldController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Enter a buy target price, e.g. 180',
+                          hintStyle: TextStyle(fontSize: 12.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
                       ),
                     ),
-                    filled: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  controller: _buyIntervalFieldController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Enter a buy interval. e.g: 5%',
-                    hintStyle: TextStyle(fontSize: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0,
-                        style: BorderStyle.none,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Buy Interval:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 220.0,
+                      child: TextField(
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        controller: _buyIntervalFieldController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Enter a buy interval, e.g: 5%',
+                          hintStyle: TextStyle(fontSize: 12.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
                       ),
                     ),
-                    filled: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  controller: _sellTargetFieldController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Enter a sell target price, e.g. 250',
-                    hintStyle: TextStyle(fontSize: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0,
-                        style: BorderStyle.none,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Sell Target:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 220.0,
+                      child: TextField(
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        controller: _sellTargetFieldController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Enter a sell target price, e.g. 250',
+                          hintStyle: TextStyle(fontSize: 12.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
                       ),
                     ),
-                    filled: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  controller: _sellIntervalFieldController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Enter a sell interval. e.g: 3%',
-                    hintStyle: TextStyle(fontSize: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0,
-                        style: BorderStyle.none,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Sell Interval:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 220.0,
+                      child: TextField(
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        controller: _sellIntervalFieldController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: 'Enter a sell interval, e.g. 3%',
+                          hintStyle: TextStyle(fontSize: 12.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
                       ),
                     ),
-                    filled: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  controller: _sharesBoughtFieldController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: '#of shares bought. e.g: 1000',
-                    hintStyle: TextStyle(fontSize: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0,
-                        style: BorderStyle.none,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Shares Bought:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 205.0,
+                      child: TextField(
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        controller: _sharesBoughtFieldController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: '# of shares bought, e.g: 1000',
+                          hintStyle: TextStyle(fontSize: 12.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
                       ),
                     ),
-                    filled: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  controller: _sharesSoldFieldController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: '#of shares sold. e.g: 500',
-                    hintStyle: TextStyle(fontSize: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0,
-                        style: BorderStyle.none,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Shares Sold:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 220.0,
+                      child: TextField(
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        controller: _sharesSoldFieldController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          hintText: '# of shares sold, e.g: 500',
+                          hintStyle: TextStyle(fontSize: 12.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
                       ),
                     ),
-                    filled: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: TextField(
-                  autofocus: false,
-                  textAlign: TextAlign.center,
-                  controller: _commentsFieldController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    hintText: 'Some notes. e.g: sell when price > 250',
-                    hintStyle: TextStyle(fontSize: 16.0),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                        width: 0,
-                        style: BorderStyle.none,
+                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Comments:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 220.0,
+                      child: TextField(
+                        autofocus: false,
+                        textAlign: TextAlign.center,
+                        controller: _commentsFieldController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          hintText: 'Some notes. e.g: sell when price > 250',
+                          hintStyle: TextStyle(fontSize: 12.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          contentPadding: EdgeInsets.all(16),
+                        ),
                       ),
                     ),
-                    filled: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
 

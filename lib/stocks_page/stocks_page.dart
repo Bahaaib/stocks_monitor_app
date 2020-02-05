@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:stock_monitor/bloc/stocks/bloc.dart';
 import 'package:stock_monitor/bloc/stocks/stocks_bloc.dart';
 import 'package:stock_monitor/database/moor_database.dart';
@@ -13,24 +14,43 @@ class StocksPage extends StatefulWidget {
 class _StocksPageState extends State<StocksPage> {
   final _stocksBloc = GetIt.instance<StocksBloc>();
   final _stocksList = List<Stock>();
+  ProgressDialog _progressDialog;
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _progressDialog.show());
     _stocksBloc.stocksStateSubject.listen((receivedState) {
       if (receivedState is StocksAreFetched) {
         setState(() {
           _stocksList.clear();
           _stocksList.addAll(receivedState.stocksList);
+          _progressDialog.dismiss();
         });
       }
     });
-    super.initState();
 
     _stocksBloc.dispatch(AllStocksRequested());
+    super.initState();
+  }
+
+  void _initProgressDialog() {
+    _progressDialog.style(
+      message: 'Fetching data...',
+      backgroundColor: Colors.white,
+      progressWidget: CircularProgressIndicator(),
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      messageTextStyle: TextStyle(
+          color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.w600),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    _progressDialog = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+    _initProgressDialog();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Stocks List'),
@@ -132,7 +152,11 @@ class _StocksPageState extends State<StocksPage> {
                         print(
                             'SELECTED STOCK SYMBOL: ${stock.symbol} ==> ${stock.id}');
                         Navigator.pushNamed(context, '/add_stock_page',
-                            arguments: {'job': 'update', 'stock': stock});
+                                arguments: {'job': 'update', 'stock': stock})
+                            .then((_) {
+                          _progressDialog.show();
+                          _stocksBloc.dispatch(AllStocksRequested());
+                        });
                       },
                     ),
                     Container(

@@ -21,6 +21,10 @@ class StocksBloc extends BLoC<StocksEvent> {
     if (event is StockUpdateRequested) {
       _updateStock(event.stock);
     }
+
+    if (event is StockDeleteRequested) {
+      _deleteStock(event.stock);
+    }
   }
 
   Future<void> _insertStockIntoDatabase(Stock stock) async {
@@ -37,8 +41,17 @@ class StocksBloc extends BLoC<StocksEvent> {
         .then((_) => stocksStateSubject.sink.add(StockIsUpdated(true)))
         .catchError((_) => stocksStateSubject.sink.add(StockIsUpdated(false)));
   }
+
+  Future<void> _deleteStock(Stock stock) async {
+    _stockDatabase
+        .deleteStock(stock)
+        .then((_) => stocksStateSubject.sink.add(StockIsDeleted(true)))
+        .catchError((_) => stocksStateSubject.sink.add(StockIsDeleted(false)));
+  }
+
   Future<void> _getAllStocks() async {
-    final List<Stock> stocks = await _stockDatabase.getAllStocksInAlphabeticalOrder();
+    final List<Stock> stocks =
+        await _stockDatabase.getAllStocksInAlphabeticalOrder();
     stocksStateSubject.sink.add(StocksAreFetched(stocks));
   }
 

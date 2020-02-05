@@ -16,3 +16,9 @@ class StockUpdateRequested extends StocksEvent{
   StockUpdateRequested(this.stock);
 }
 
+class StockDeleteRequested extends StocksEvent{
+  final Stock stock;
+
+  StockDeleteRequested(this.stock);
+}
+

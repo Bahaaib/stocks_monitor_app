@@ -18,5 +18,10 @@ class StockIsUpdated extends StocksState {
   bool isSuccessful;
 
   StockIsUpdated(this.isSuccessful);
+}
 
+class StockIsDeleted extends StocksState {
+  bool isSuccessful;
+
+  StockIsDeleted(this.isSuccessful);
 }
