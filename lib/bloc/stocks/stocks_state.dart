@@ -1,3 +1,4 @@
+import 'package:stock_monitor/PODO/StocksList.dart';
 import 'package:stock_monitor/database/moor_database.dart';
 
 abstract class StocksState {}
@@ -24,4 +25,12 @@ class StockIsDeleted extends StocksState {
   bool isSuccessful;
 
   StockIsDeleted(this.isSuccessful);
+}
+
+class StocksDataIsFetched extends StocksState{
+  final StocksList stocks;
+
+  StocksDataIsFetched(this.stocks);
+
+
 }

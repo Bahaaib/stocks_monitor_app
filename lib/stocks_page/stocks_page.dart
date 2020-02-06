@@ -16,6 +16,8 @@ class StocksPage extends StatefulWidget {
 class _StocksPageState extends State<StocksPage> {
   final _stocksBloc = GetIt.instance<StocksBloc>();
   final _stocksList = List<Stock>();
+  final _requestedSymbols = List<String>();
+  final _remoteStocks = List<APIStock>();
   ProgressDialog _progressDialog;
 
   @override
@@ -26,6 +28,15 @@ class _StocksPageState extends State<StocksPage> {
         setState(() {
           _stocksList.clear();
           _stocksList.addAll(receivedState.stocksList);
+          _fillRequestedSymbolsList();
+          _stocksBloc.dispatch(StocksRemoteDataRequested(_requestedSymbols));
+        });
+      }
+
+      if (receivedState is StocksDataIsFetched) {
+        setState(() {
+          _remoteStocks.clear();
+          _remoteStocks.addAll(receivedState.stocks.stocksList);
           _progressDialog.dismiss();
         });
       }
@@ -33,6 +44,10 @@ class _StocksPageState extends State<StocksPage> {
 
     _stocksBloc.dispatch(AllStocksRequested());
     super.initState();
+  }
+
+  void _fillRequestedSymbolsList() {
+    _stocksList.forEach((stock) => _requestedSymbols.add(stock.symbol));
   }
 
   void _initProgressDialog() {
@@ -64,158 +79,185 @@ class _StocksPageState extends State<StocksPage> {
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/add_stock_page',
-                    arguments: {'job': 'add'});
+                    arguments: {'job': 'add'}).then((_) {
+                  _progressDialog.show();
+                  _stocksBloc.dispatch(AllStocksRequested());
+                  Navigator.pop(context);
+                });
               })
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Table(
-              children: [
-                TableRow(
-                  children: [
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('Symbol'),
+      body: _stocksList.isNotEmpty && _remoteStocks.isNotEmpty
+          ? SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Table(
+                    children: [
+                      TableRow(
+                        children: [
+                          Container(
+                            height: 30.0,
+                            child: Center(
+                              child: Text('Symbol'),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.grey),
+                          ),
+                          Container(
+                            height: 30.0,
+                            child: Center(
+                              child: Text('Price'),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.grey),
+                          ),
+                          Container(
+                            height: 30.0,
+                            child: Center(
+                              child: Text('Change'),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.grey),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                            height: 30.0,
+                            child: Center(
+                              child: FittedBox(child: Text('Change%')),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.grey),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                            height: 30.0,
+                            child: Center(
+                              child: FittedBox(child: Text('Buy T.Diff.')),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.grey),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                            height: 30.0,
+                            child: Center(
+                              child: FittedBox(child: Text('Sell T.Diff.')),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.grey),
+                          ),
+                        ],
                       ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
-                    ),
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('Price'),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
-                    ),
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('Change'),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('Change%')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('Buy T.Diff.')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('Sell T.Diff.')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Table(
-              children: _stocksList.map((stock) {
-                return TableRow(
-                  children: [
-                    InkWell(
-                      child: Container(
-                        height: 30.0,
-                        child: Center(
-                          child: Text(stock.symbol),
-                        ),
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            color: Colors.grey),
-                      ),
-                      onTap: () {
-                        print(
-                            'SELECTED STOCK SYMBOL: ${stock.symbol} ==> ${stock.id}');
-                        Navigator.pushNamed(context, '/add_stock_page',
-                                arguments: {'job': 'update', 'stock': stock})
-                            .then((_) {
-                          _progressDialog.show();
-                          _stocksBloc.dispatch(AllStocksRequested());
-                        });
-                      },
-                    ),
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('50'),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('100'),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('13%')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('-20')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('+40')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                  ],
-                );
-              }).toList(),
+                    ],
+                  ),
+                  Table(
+                    children: _stocksList.map((stock) {
+                      return TableRow(
+                        children: [
+                          InkWell(
+                            child: Container(
+                              height: 30.0,
+                              child: Center(
+                                child: Text(stock.symbol),
+                              ),
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  color: Colors.grey),
+                            ),
+                            onTap: () {
+                              print(
+                                  'SELECTED STOCK SYMBOL: ${stock.symbol} ==> ${stock.id}');
+                              Navigator.pushNamed(context, '/add_stock_page',
+                                  arguments: {
+                                    'job': 'update',
+                                    'stock': stock
+                                  }).then((_) {
+                                _progressDialog.show();
+                                _stocksBloc.dispatch(AllStocksRequested());
+                              });
+                            },
+                          ),
+                          Container(
+                            height: 30.0,
+                            padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                            child: Center(
+                              child: FittedBox(
+                                  child: Text(
+                                      '${_remoteStocks[_stocksList.indexOf(stock)].priceToBook}')),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.white),
+                          ),
+                          Container(
+                            height: 30.0,
+                            child: Center(
+                              child: Text('100'),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.white),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                            height: 30.0,
+                            child: Center(
+                              child: FittedBox(child: Text('13%')),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.white),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                            height: 30.0,
+                            child: Center(
+                              child: FittedBox(child: Text('-20')),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.white),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                            height: 30.0,
+                            child: Center(
+                              child: FittedBox(child: Text('+40')),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: Colors.white),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  )
+                ],
+              ),
             )
-          ],
-        ),
-      ),
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.warning,
+                    size: 50.0,
+                    color: Colors.grey,
+                  ),
+                  Text(
+                    'No Stocks added yet',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }

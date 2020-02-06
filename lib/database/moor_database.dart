@@ -50,6 +50,8 @@ class StocksDatabase extends _$StocksDatabase {
 
   Future deleteStock(Stock stock) => delete(stocks).delete(stock);
 
+  Future deleteAllFromTable() => delete(stocks).go();
+
   Future<List<Stock>> getAllStocksInAlphabeticalOrder() {
     return (select(stocks)
           ..orderBy(

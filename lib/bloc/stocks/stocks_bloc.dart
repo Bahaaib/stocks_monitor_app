@@ -18,7 +18,6 @@ class StocksBloc extends BLoC<StocksEvent> {
     }
 
     if (event is AllStocksRequested) {
-      _fetchStockDataFromApi();
       _getAllStocks();
     }
 
@@ -28,6 +27,10 @@ class StocksBloc extends BLoC<StocksEvent> {
 
     if (event is StockDeleteRequested) {
       _deleteStock(event.stock);
+    }
+
+    if(event is StocksRemoteDataRequested){
+      _fetchStockDataFromApi(event.symbolsList);
     }
   }
 
@@ -59,10 +62,17 @@ class StocksBloc extends BLoC<StocksEvent> {
     stocksStateSubject.sink.add(StocksAreFetched(stocks));
   }
 
-  Future<void> _fetchStockDataFromApi() async {
+  Future<void> _fetchStockDataFromApi(List<String> symbols) async {
+    APIManager.parseStocksSymbols(symbols);
     StocksList stocks = await APIManager.fetchStock();
-    print('${stocks.stocksList[0].longName} ==> Price: ${stocks.stocksList[0].priceToBook}');
+    stocksStateSubject.sink.add(StocksDataIsFetched(stocks));
   }
+
+  //For debugging only
+  Future<void> _resetDatabase() async {
+   _stockDatabase.deleteAllFromTable();
+  }
+
 
   void dispose() {
     stocksStateSubject.close();
