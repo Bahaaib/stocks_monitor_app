@@ -1,5 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:stock_monitor/API/api_manager.dart';
+import 'package:stock_monitor/PODO/APIStock.dart';
+import 'package:stock_monitor/PODO/StocksList.dart';
 import 'package:stock_monitor/bloc/bloc.dart';
 import 'package:stock_monitor/bloc/stocks/bloc.dart';
 import 'package:stock_monitor/database/moor_database.dart';
@@ -15,6 +18,7 @@ class StocksBloc extends BLoC<StocksEvent> {
     }
 
     if (event is AllStocksRequested) {
+      _fetchStockDataFromApi();
       _getAllStocks();
     }
 
@@ -53,6 +57,11 @@ class StocksBloc extends BLoC<StocksEvent> {
     final List<Stock> stocks =
         await _stockDatabase.getAllStocksInAlphabeticalOrder();
     stocksStateSubject.sink.add(StocksAreFetched(stocks));
+  }
+
+  Future<void> _fetchStockDataFromApi() async {
+    StocksList stocks = await APIManager.fetchStock();
+    print('${stocks.stocksList[0].longName} ==> Price: ${stocks.stocksList[0].priceToBook}');
   }
 
   void dispose() {

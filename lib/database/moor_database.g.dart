@@ -21,7 +21,7 @@ class Stock extends DataClass implements Insertable<Stock> {
   final String sharesSold;
   final String comments;
   Stock(
-      {this.id,
+      {@required this.id,
       @required this.symbol,
       @required this.categoryId,
       @required this.color,
