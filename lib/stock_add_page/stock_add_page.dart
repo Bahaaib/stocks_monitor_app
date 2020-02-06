@@ -48,10 +48,13 @@ class _StockAddPageState extends State<StockAddPage> {
   @override
   void initState() {
     _stocksBloc.stocksStateSubject.listen((receivedState) {
+
       if (receivedState is StockInserted) {
         print('STATE INSERT');
         if (receivedState.isSuccessful) {
-          _progressDialog.dismiss();
+          if (_progressDialog.isShowing()) {
+            Navigator.of(context).pop();
+          }
           _showSuccessDialog(context);
         } else {
           _progressDialog.dismiss();
@@ -64,7 +67,7 @@ class _StockAddPageState extends State<StockAddPage> {
         print('STATE UPDATE');
 
         if (receivedState.isSuccessful) {
-          _progressDialog.dismiss();
+          Navigator.of(context).pop();
           _showSuccessDialog(context);
         } else {
           _progressDialog.dismiss();
@@ -74,8 +77,11 @@ class _StockAddPageState extends State<StockAddPage> {
       }
 
       if (receivedState is StockIsDeleted) {
+        print('STATE DELETE');
         if (receivedState.isSuccessful) {
-          _progressDialog.dismiss();
+          if (_progressDialog.isShowing()) {
+            Navigator.of(context).pop();
+          }
           Navigator.of(context).pop();
         } else {
           _progressDialog.dismiss();
@@ -161,7 +167,8 @@ class _StockAddPageState extends State<StockAddPage> {
             children: <Widget>[
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Symbol:',
@@ -308,7 +315,8 @@ class _StockAddPageState extends State<StockAddPage> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Buy Target:',
@@ -343,7 +351,8 @@ class _StockAddPageState extends State<StockAddPage> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Buy Interval:',
@@ -378,7 +387,8 @@ class _StockAddPageState extends State<StockAddPage> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Sell Target:',
@@ -413,7 +423,8 @@ class _StockAddPageState extends State<StockAddPage> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Sell Interval:',
@@ -448,7 +459,8 @@ class _StockAddPageState extends State<StockAddPage> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Shares Bought:',
@@ -483,7 +495,8 @@ class _StockAddPageState extends State<StockAddPage> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Shares Sold:',
@@ -518,7 +531,8 @@ class _StockAddPageState extends State<StockAddPage> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
-                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       'Comments:',
@@ -551,7 +565,6 @@ class _StockAddPageState extends State<StockAddPage> {
                   ],
                 ),
               ),
-
               Container(
                   margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   child: RaisedButton(

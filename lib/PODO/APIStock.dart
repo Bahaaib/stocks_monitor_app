@@ -6,6 +6,8 @@ part 'APIStock.g.dart';
 class APIStock {
   String longName;
   double priceToBook;
+  double regularMarketChange;
+  double regularMarketChangePercent;
 
   APIStock(this.longName, this.priceToBook);
 

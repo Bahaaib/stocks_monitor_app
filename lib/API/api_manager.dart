@@ -26,4 +26,8 @@ class APIManager {
       print('REQUESTED SYMBOLS: $_requestedSymbols');
     });
   }
+
+  static void clearSymbols() {
+    _requestedSymbols = '';
+  }
 }

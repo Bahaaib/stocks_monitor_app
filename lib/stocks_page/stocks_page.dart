@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:stock_monitor/API/api_manager.dart';
@@ -18,13 +19,21 @@ class _StocksPageState extends State<StocksPage> {
   final _stocksList = List<Stock>();
   final _requestedSymbols = List<String>();
   final _remoteStocks = List<APIStock>();
+  final _emptyList = List<String>();
   ProgressDialog _progressDialog;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _progressDialog.show());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('SHOWN');
+      _progressDialog.show();
+    });
     _stocksBloc.stocksStateSubject.listen((receivedState) {
       if (receivedState is StocksAreFetched) {
+        if (!_progressDialog.isShowing()) {
+          print('SHOWN');
+          _progressDialog.show();
+        }
         setState(() {
           _stocksList.clear();
           _stocksList.addAll(receivedState.stocksList);
@@ -34,10 +43,11 @@ class _StocksPageState extends State<StocksPage> {
       }
 
       if (receivedState is StocksDataIsFetched) {
+        _progressDialog.dismiss();
         setState(() {
           _remoteStocks.clear();
           _remoteStocks.addAll(receivedState.stocks.stocksList);
-          _progressDialog.dismiss();
+          print('DISMISSED');
         });
       }
     });
@@ -47,6 +57,7 @@ class _StocksPageState extends State<StocksPage> {
   }
 
   void _fillRequestedSymbolsList() {
+    _requestedSymbols.clear();
     _stocksList.forEach((stock) => _requestedSymbols.add(stock.symbol));
   }
 
@@ -80,9 +91,7 @@ class _StocksPageState extends State<StocksPage> {
               onPressed: () {
                 Navigator.pushNamed(context, '/add_stock_page',
                     arguments: {'job': 'add'}).then((_) {
-                  _progressDialog.show();
                   _stocksBloc.dispatch(AllStocksRequested());
-                  Navigator.pop(context);
                 });
               })
         ],
@@ -158,6 +167,18 @@ class _StocksPageState extends State<StocksPage> {
                   ),
                   Table(
                     children: _stocksList.map((stock) {
+                      int index = _stocksList.indexOf(stock);
+                      if (index + 1 > _remoteStocks.length) {
+                        return TableRow(children: [
+                          Container(),
+                          Container(),
+                          Container(),
+                          Container(),
+                          Container(),
+                          Container(),
+                        ]);
+                      }
+                      double _price = _remoteStocks[index].priceToBook;
                       return TableRow(
                         children: [
                           InkWell(
@@ -178,7 +199,6 @@ class _StocksPageState extends State<StocksPage> {
                                     'job': 'update',
                                     'stock': stock
                                   }).then((_) {
-                                _progressDialog.show();
                                 _stocksBloc.dispatch(AllStocksRequested());
                               });
                             },
@@ -188,8 +208,8 @@ class _StocksPageState extends State<StocksPage> {
                             padding: EdgeInsets.only(left: 2.0, right: 2.0),
                             child: Center(
                               child: FittedBox(
-                                  child: Text(
-                                      '${_remoteStocks[_stocksList.indexOf(stock)].priceToBook}')),
+                                child: Text('$_price'),
+                              ),
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
@@ -197,8 +217,12 @@ class _StocksPageState extends State<StocksPage> {
                           ),
                           Container(
                             height: 30.0,
+                            padding: EdgeInsets.only(left: 2.0, right: 2.0),
                             child: Center(
-                              child: Text('100'),
+                              child: FittedBox(
+                                child: Text(
+                                    '${_remoteStocks[_stocksList.indexOf(stock)].regularMarketChange}'),
+                              ),
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
@@ -208,7 +232,10 @@ class _StocksPageState extends State<StocksPage> {
                             padding: EdgeInsets.only(left: 2.0, right: 2.0),
                             height: 30.0,
                             child: Center(
-                              child: FittedBox(child: Text('13%')),
+                              child: FittedBox(
+                                child: Text(
+                                    '${_remoteStocks[_stocksList.indexOf(stock)].regularMarketChangePercent}'),
+                              ),
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
@@ -218,7 +245,8 @@ class _StocksPageState extends State<StocksPage> {
                             padding: EdgeInsets.only(left: 2.0, right: 2.0),
                             height: 30.0,
                             child: Center(
-                              child: FittedBox(child: Text('-20')),
+                              child: FittedBox(
+                                  child: Text('${_calcBTDiff(_price, stock)}')),
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
@@ -228,7 +256,8 @@ class _StocksPageState extends State<StocksPage> {
                             padding: EdgeInsets.only(left: 2.0, right: 2.0),
                             height: 30.0,
                             child: Center(
-                              child: FittedBox(child: Text('+40')),
+                              child: FittedBox(
+                                  child: Text('${_calcSTDiff(_price, stock)}')),
                             ),
                             decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
@@ -259,5 +288,17 @@ class _StocksPageState extends State<StocksPage> {
               ),
             ),
     );
+  }
+
+  String _calcBTDiff(double price, Stock stock) {
+    return ((price - double.parse(stock.buyTarget)) /
+            ((double.parse(stock.buyTarget) * 100)))
+        .toStringAsFixed(6);
+  }
+
+  String _calcSTDiff(double price, Stock stock) {
+    return ((price - double.parse(stock.sellTarget)) /
+            ((double.parse(stock.sellTarget) * 100)))
+        .toStringAsFixed(6);
   }
 }

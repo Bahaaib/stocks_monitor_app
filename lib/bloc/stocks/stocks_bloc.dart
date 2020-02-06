@@ -63,6 +63,7 @@ class StocksBloc extends BLoC<StocksEvent> {
   }
 
   Future<void> _fetchStockDataFromApi(List<String> symbols) async {
+    APIManager.clearSymbols();
     APIManager.parseStocksSymbols(symbols);
     StocksList stocks = await APIManager.fetchStock();
     stocksStateSubject.sink.add(StocksDataIsFetched(stocks));
