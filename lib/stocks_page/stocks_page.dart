@@ -94,6 +94,17 @@ class _StocksPageState extends State<StocksPage> {
                     arguments: {'job': 'add'}).then((_) {
                   _stocksBloc.dispatch(AllStocksRequested());
                 });
+              }),
+          IconButton(
+              icon: Icon(
+                Icons.shopping_cart,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/buy_stock_page',
+                    arguments: {'job': 'add'}).then((_) {
+                  _stocksBloc.dispatch(AllStocksRequested());
+                });
               })
         ],
       ),

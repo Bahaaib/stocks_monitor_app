@@ -6,6 +6,7 @@ import 'package:stock_monitor/database/moor_database.dart';
 import 'package:stock_monitor/sell_stocks_page/sell_stocks_page.dart';
 import 'package:stock_monitor/stock_add_page/stock_add_page.dart';
 import 'package:stock_monitor/stocks_page/stocks_page.dart';
+import 'package:stock_monitor/utilities/buy_levels.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     GetIt.instance.registerSingleton<StocksDatabase>(StocksDatabase());
     GetIt.instance.registerSingleton<StocksBloc>(StocksBloc());
+    GetIt.instance.registerSingleton<BuyLevels>(BuyLevels());
     return MaterialApp(
       title: 'Stocks Monitor',
       theme: ThemeData(
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => StocksPage(),
         '/add_stock_page': (context) => StockAddPage(),
-
+        '/buy_stock_page': (context) => BuyStocksPage(),
       },
     );
   }
