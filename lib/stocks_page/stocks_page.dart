@@ -19,7 +19,6 @@ class _StocksPageState extends State<StocksPage> {
   final _stocksList = List<Stock>();
   final _requestedSymbols = List<String>();
   final _remoteStocks = List<APIStock>();
-  final _emptyList = List<String>();
   ProgressDialog _progressDialog;
 
   @override
@@ -34,12 +33,14 @@ class _StocksPageState extends State<StocksPage> {
           print('SHOWN');
           _progressDialog.show();
         }
-        setState(() {
-          _stocksList.clear();
-          _stocksList.addAll(receivedState.stocksList);
-          _fillRequestedSymbolsList();
+        _stocksList.clear();
+        _stocksList.addAll(receivedState.stocksList);
+        _fillRequestedSymbolsList();
+        if (_requestedSymbols.isNotEmpty) {
           _stocksBloc.dispatch(StocksRemoteDataRequested(_requestedSymbols));
-        });
+        } else {
+          _progressDialog.dismiss();
+        }
       }
 
       if (receivedState is StocksDataIsFetched) {
@@ -168,17 +169,7 @@ class _StocksPageState extends State<StocksPage> {
                   Table(
                     children: _stocksList.map((stock) {
                       int index = _stocksList.indexOf(stock);
-                      if (index + 1 > _remoteStocks.length) {
-                        return TableRow(children: [
-                          Container(),
-                          Container(),
-                          Container(),
-                          Container(),
-                          Container(),
-                          Container(),
-                        ]);
-                      }
-                      double _price = _remoteStocks[index].priceToBook;
+                      double _price = _remoteStocks[index].regularMarketPrice;
                       return TableRow(
                         children: [
                           InkWell(

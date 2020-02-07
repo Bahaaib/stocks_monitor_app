@@ -5,11 +5,11 @@ part 'APIStock.g.dart';
 @JsonSerializable()
 class APIStock {
   String longName;
-  double priceToBook;
+  double regularMarketPrice;
   double regularMarketChange;
   double regularMarketChangePercent;
 
-  APIStock(this.longName, this.priceToBook);
+  APIStock(this.longName, this.regularMarketPrice);
 
   factory APIStock.fromJson(Map<String, dynamic> json) =>
       _$APIStockFromJson(json);
@@ -22,7 +22,7 @@ class APIStock {
       other is APIStock &&
           runtimeType == other.runtimeType &&
           (longName == other.longName) &&
-          (priceToBook == other.priceToBook);
+          (regularMarketPrice == other.regularMarketPrice);
 
   @override
   int get hashCode => longName.hashCode;

@@ -9,7 +9,7 @@ part of 'APIStock.dart';
 APIStock _$APIStockFromJson(Map<String, dynamic> json) {
   return APIStock(
     json['longName'] as String,
-    (json['priceToBook'] as num)?.toDouble(),
+    (json['regularMarketPrice'] as num)?.toDouble(),
   )
     ..regularMarketChange = (json['regularMarketChange'] as num)?.toDouble()
     ..regularMarketChangePercent =
@@ -18,7 +18,7 @@ APIStock _$APIStockFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$APIStockToJson(APIStock instance) => <String, dynamic>{
       'longName': instance.longName,
-      'priceToBook': instance.priceToBook,
+      'regularMarketPrice': instance.regularMarketPrice,
       'regularMarketChange': instance.regularMarketChange,
       'regularMarketChangePercent': instance.regularMarketChangePercent,
     };
