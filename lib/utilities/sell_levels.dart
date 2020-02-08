@@ -47,33 +47,39 @@ class SellLevels {
         _sellLevel10 * (1 + (double.parse(stock.sellInterval) / 100.0));
     _sellLevel12 =
         _sellLevel11 * (1 + (double.parse(stock.sellInterval) / 100.0));
+
+    print('STOCK ==> ${stock.symbol}');
+    print('SL1 ==> $_sellLevel1');
+    print('SL2 ==> $_sellLevel2');
+    print('SL3 ==> $_sellLevel3');
+    print('SL4 ==> $_sellLevel4');
   }
 
   int getStockLevel() {
-    if (_mTargetValue <= double.parse(_mStock.sellTarget) &&
-        _mTargetValue > _sellLevel1) {
+    if (_mTargetValue >= double.parse(_mStock.sellTarget) &&
+        _mTargetValue < _sellLevel1) {
       return 1;
-    } else if (_mTargetValue <= _sellLevel1 && _mTargetValue > _sellLevel2) {
+    } else if (_mTargetValue >= _sellLevel1 && _mTargetValue < _sellLevel2) {
       return 2;
-    } else if (_mTargetValue <= _sellLevel2 && _mTargetValue > _sellLevel3) {
+    } else if (_mTargetValue >= _sellLevel2 && _mTargetValue < _sellLevel3) {
       return 3;
-    } else if (_mTargetValue <= _sellLevel3 && _mTargetValue > _sellLevel4) {
+    } else if (_mTargetValue >= _sellLevel3 && _mTargetValue < _sellLevel4) {
       return 4;
-    } else if (_mTargetValue <= _sellLevel4 && _mTargetValue > _sellLevel5) {
+    } else if (_mTargetValue >= _sellLevel4 && _mTargetValue < _sellLevel5) {
       return 5;
-    } else if (_mTargetValue <= _sellLevel5 && _mTargetValue > _sellLevel6) {
+    } else if (_mTargetValue >= _sellLevel5 && _mTargetValue < _sellLevel6) {
       return 6;
-    } else if (_mTargetValue <= _sellLevel6 && _mTargetValue > _sellLevel7) {
+    } else if (_mTargetValue >= _sellLevel6 && _mTargetValue < _sellLevel7) {
       return 7;
-    } else if (_mTargetValue <= _sellLevel7 && _mTargetValue > _sellLevel8) {
+    } else if (_mTargetValue >= _sellLevel7 && _mTargetValue < _sellLevel8) {
       return 8;
-    } else if (_mTargetValue <= _sellLevel8 && _mTargetValue > _sellLevel9) {
+    } else if (_mTargetValue >= _sellLevel8 && _mTargetValue < _sellLevel9) {
       return 9;
-    } else if (_mTargetValue <= _sellLevel9 && _mTargetValue > _sellLevel10) {
+    } else if (_mTargetValue >= _sellLevel9 && _mTargetValue < _sellLevel10) {
       return 10;
-    } else if (_mTargetValue <= _sellLevel10 && _mTargetValue > _sellLevel1) {
+    } else if (_mTargetValue >= _sellLevel10 && _mTargetValue < _sellLevel1) {
       return 11;
-    } else if (_mTargetValue <= _sellLevel11 && _mTargetValue > _sellLevel2) {
+    } else if (_mTargetValue >= _sellLevel11 && _mTargetValue < _sellLevel2) {
       return 12;
     } else {
       return -1;

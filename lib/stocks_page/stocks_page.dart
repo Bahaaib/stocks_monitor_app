@@ -85,15 +85,15 @@ class _StocksPageState extends State<StocksPage> {
         title: Text('Stocks List'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(
-              Icons.call_missed_outgoing,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, '/sell_stock_page').then((_) {
-                _stocksBloc.dispatch(AllStocksRequested());
-              });
-            }),
+              icon: Icon(
+                Icons.call_missed_outgoing,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/sell_stock_page').then((_) {
+                  _stocksBloc.dispatch(AllStocksRequested());
+                });
+              }),
           IconButton(
               icon: Icon(
                 Icons.shopping_cart,
@@ -105,16 +105,16 @@ class _StocksPageState extends State<StocksPage> {
                 });
               }),
           IconButton(
-            icon: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, '/add_stock_page',
-                arguments: {'job': 'add'}).then((_) {
-                _stocksBloc.dispatch(AllStocksRequested());
-              });
-            }),
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/add_stock_page',
+                    arguments: {'job': 'add'}).then((_) {
+                  _stocksBloc.dispatch(AllStocksRequested());
+                });
+              }),
         ],
       ),
       body: _stocksList.isNotEmpty && _remoteStocks.isNotEmpty
@@ -190,7 +190,7 @@ class _StocksPageState extends State<StocksPage> {
                     children: _stocksList.map((stock) {
                       int index = _stocksList.indexOf(stock);
 
-                      if (index< _remoteStocks.length + 1) {
+                      if (index < _remoteStocks.length) {
                         double _price = _remoteStocks[index].regularMarketPrice;
                         return TableRow(
                           children: [
