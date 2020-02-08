@@ -151,6 +151,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
     );
   }
 
+  //Calculate the height of each row relative to its children number
   void _calculateHeights() {
     _rowHeights.clear();
     _leveledStocks.forEach((level) {
@@ -166,8 +167,10 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
     });
   }
 
+  //Render each row
   List<Widget> _buildLevelRow(int level) {
     List<Widget> rowList = List<Widget>();
+    //Add the Level number cell as the first of each row
     rowList.add(Container(
       padding: EdgeInsets.only(left: 2.0, right: 2.0),
       height: _rowHeights[11 - level],
@@ -177,14 +180,18 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
       decoration: BoxDecoration(
           border: Border.all(color: Colors.black), color: Colors.grey),
     ));
+
+    //Get the stocks list for a certain level (Reversely for buy stocks)
     final List<Stock> stocksList = _leveledStocks[11 - level];
     List<Stock> categoryStocksList = List<Stock>();
 
+    //iterate over the number of stocks in each category
     for (int i = 1; i < 6; i++) {
       categoryStocksList = stocksList.where((stock) {
         return stock.categoryId == i;
       }).toList();
 
+      //If this category has no stocks, set a white empty cell
       if (categoryStocksList.isEmpty) {
         rowList.add(Container(
           padding: EdgeInsets.only(left: 2.0, right: 2.0),
@@ -195,6 +202,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
           decoration: BoxDecoration(
               border: Border.all(color: Colors.black), color: Colors.white),
         ));
+        //If this category has some stocks, add a column of cells
       } else {
         rowList.add(Column(
           children: categoryStocksList.map((stock) {
@@ -205,15 +213,16 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
               height: 50.0,
               child: Center(
                 child: FittedBox(
-                    child: Column(
-                  children: <Widget>[
-                    Text(
-                        '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
-                    Text(
-                        '${(_levelUnits[11 - level] * 1000 / _remoteStocks[_index].regularMarketPrice).toStringAsFixed(4)}'),
-                    Text('${stock.sharesBought}'),
-                  ],
-                )),
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                          '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
+                      Text(
+                          '${(_levelUnits[11 - level] * 1000 / _remoteStocks[_index].regularMarketPrice).toStringAsFixed(4)}'),
+                      Text('${stock.sharesBought}'),
+                    ],
+                  ),
+                ),
               ),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black),
