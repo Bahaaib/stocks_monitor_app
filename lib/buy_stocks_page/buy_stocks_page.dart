@@ -17,6 +17,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
   final _stocksList = List<Stock>();
   final _remoteStocks = List<APIStock>();
   final _leveledStocks = List<List<Stock>>();
+  final _rowHeights = List<double>();
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
         setState(() {
           _leveledStocks.clear();
           _leveledStocks.addAll(receivedState.leveledStocks);
+          _calculateHeights();
         });
       }
     });
@@ -65,7 +67,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Buy List Screen'),
+        title: Text('Buy List'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -149,18 +151,33 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
     );
   }
 
+  void _calculateHeights() {
+    _rowHeights.clear();
+    _leveledStocks.forEach((level) {
+      double _height = 0.0;
+      if (level.isEmpty) {
+        _rowHeights.add(50.0);
+      } else {
+        level.forEach((stock) {
+          _height = _height + 50.0;
+        });
+        _rowHeights.add(_height);
+      }
+    });
+  }
+
   List<Widget> _buildLevelRow(int level) {
     List<Widget> rowList = List<Widget>();
     rowList.add(Container(
       padding: EdgeInsets.only(left: 2.0, right: 2.0),
-      height: 50.0,
+      height: _rowHeights[11 - level],
       child: Center(
-        child: FittedBox(child: Text('${level + 1}')),
+        child: FittedBox(child: Text('Level ${11 - level + 1}')),
       ),
       decoration: BoxDecoration(
           border: Border.all(color: Colors.black), color: Colors.grey),
     ));
-    final List<Stock> stocksList = _leveledStocks[level];
+    final List<Stock> stocksList = _leveledStocks[11 - level];
     List<Stock> categoryStocksList = List<Stock>();
 
     for (int i = 1; i < 6; i++) {
@@ -171,7 +188,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
       if (categoryStocksList.isEmpty) {
         rowList.add(Container(
           padding: EdgeInsets.only(left: 2.0, right: 2.0),
-          height: 50.0,
+          height: _rowHeights[11 - level],
           child: Center(
             child: FittedBox(child: Text(' ')),
           ),
@@ -181,9 +198,8 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
       } else {
         rowList.add(Column(
           children: categoryStocksList.map((stock) {
-            Stock mStock = _stocksList
-                .firstWhere((nStock) => stock.symbol == stock.symbol);
             int _index = _stocksList.indexOf(stock);
+
             return Container(
               padding: EdgeInsets.only(left: 2.0, right: 2.0),
               height: 50.0,
@@ -194,13 +210,15 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
                     Text(
                         '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
                     Text(
-                        '${(_levelUnits[level] * 1000 / _remoteStocks[_index].regularMarketPrice).toStringAsFixed(4)}'),
+                        '${(_levelUnits[11 - level] * 1000 / _remoteStocks[_index].regularMarketPrice).toStringAsFixed(4)}'),
                     Text('${stock.sharesBought}'),
                   ],
                 )),
               ),
               decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black), color: _gerCellColor(stock.color),),
+                border: Border.all(color: Colors.black),
+                color: _getCellColor(stock.color),
+              ),
             );
           }).toList(),
         ));
@@ -209,7 +227,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
     return rowList;
   }
 
-  Color _gerCellColor(String color) {
+  Color _getCellColor(String color) {
     switch (color) {
       case 'Red':
         return Colors.red;
@@ -225,6 +243,9 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
         break;
       case 'Blue':
         return Colors.blue;
+        break;
+      default:
+        return Colors.white;
         break;
     }
   }
