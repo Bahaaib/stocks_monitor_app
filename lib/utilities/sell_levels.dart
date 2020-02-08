@@ -47,12 +47,6 @@ class SellLevels {
         _sellLevel10 * (1 + (double.parse(stock.sellInterval) / 100.0));
     _sellLevel12 =
         _sellLevel11 * (1 + (double.parse(stock.sellInterval) / 100.0));
-
-    print('STOCK ==> ${stock.symbol}');
-    print('SL1 ==> $_sellLevel1');
-    print('SL2 ==> $_sellLevel2');
-    print('SL3 ==> $_sellLevel3');
-    print('SL4 ==> $_sellLevel4');
   }
 
   int getStockLevel() {

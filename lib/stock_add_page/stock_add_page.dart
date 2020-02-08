@@ -20,6 +20,7 @@ class _StockAddPageState extends State<StockAddPage> {
   int _index;
   ProgressDialog _progressDialog;
   bool _isInit = true;
+  String _pickedColor = 'Red';
 
   final _symbolFieldController = TextEditingController();
   final _buyTargetFieldController = TextEditingController();
@@ -30,6 +31,14 @@ class _StockAddPageState extends State<StockAddPage> {
   final _sharesSoldFieldController = TextEditingController();
   final _commentsFieldController = TextEditingController();
 
+  final _buyTargetNode = FocusNode();
+  final _buyIntervalNode = FocusNode();
+  final _sellTargetNode = FocusNode();
+  final _sellIntervalNode = FocusNode();
+  final _sharesBoughtNode = FocusNode();
+  final _sharesSoldNode = FocusNode();
+  final _commentsNode = FocusNode();
+
   final List<String> _categoriesList = ['1', '2', '3', '4', '5'];
   final List<String> _colorsList = [
     'Red',
@@ -38,7 +47,7 @@ class _StockAddPageState extends State<StockAddPage> {
     'Green',
     'Blue',
   ];
-  String _pickedColor;
+
   final List<String> _targetNames = [
     'Price',
     'Change',
@@ -48,7 +57,6 @@ class _StockAddPageState extends State<StockAddPage> {
   @override
   void initState() {
     _stocksBloc.stocksStateSubject.listen((receivedState) {
-
       if (receivedState is StockInserted) {
         print('STATE INSERT');
         if (receivedState.isSuccessful) {
@@ -181,6 +189,7 @@ class _StockAddPageState extends State<StockAddPage> {
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _symbolFieldController,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           hintText: 'Stock symbol, e.g. MSFT',
@@ -196,6 +205,7 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
+                        onEditingComplete: ()=> FocusScope.of(context).requestFocus(_buyTargetNode),
                       ),
                     ),
                   ],
@@ -326,9 +336,11 @@ class _StockAddPageState extends State<StockAddPage> {
                     Container(
                       width: 220.0,
                       child: TextField(
+                        focusNode: _buyTargetNode,
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _buyTargetFieldController,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: 'Enter a buy target price, e.g. 180',
@@ -344,6 +356,8 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
+                        onSubmitted: (_) =>
+                            FocusScope.of(context).requestFocus(_buyIntervalNode),
                       ),
                     ),
                   ],
@@ -362,9 +376,11 @@ class _StockAddPageState extends State<StockAddPage> {
                     Container(
                       width: 220.0,
                       child: TextField(
+                        focusNode: _buyIntervalNode,
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _buyIntervalFieldController,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: 'Enter a buy interval, e.g: 5%',
@@ -380,6 +396,8 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
+                        onSubmitted: (_) =>
+                          FocusScope.of(context).requestFocus(_sellTargetNode)
                       ),
                     ),
                   ],
@@ -398,9 +416,11 @@ class _StockAddPageState extends State<StockAddPage> {
                     Container(
                       width: 220.0,
                       child: TextField(
+                        focusNode: _sellTargetNode,
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _sellTargetFieldController,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: 'Enter a sell target price, e.g. 250',
@@ -416,6 +436,8 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
+                        onSubmitted: (_) =>
+                          FocusScope.of(context).requestFocus(_sellIntervalNode)
                       ),
                     ),
                   ],
@@ -434,9 +456,11 @@ class _StockAddPageState extends State<StockAddPage> {
                     Container(
                       width: 220.0,
                       child: TextField(
+                        focusNode: _sellIntervalNode,
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _sellIntervalFieldController,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: 'Enter a sell interval, e.g. 3%',
@@ -452,6 +476,8 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
+                        onSubmitted: (_) =>
+                          FocusScope.of(context).requestFocus(_sharesBoughtNode)
                       ),
                     ),
                   ],
@@ -470,9 +496,11 @@ class _StockAddPageState extends State<StockAddPage> {
                     Container(
                       width: 205.0,
                       child: TextField(
+                        focusNode: _sharesBoughtNode,
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _sharesBoughtFieldController,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: '# of shares bought, e.g: 1000',
@@ -488,6 +516,8 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
+                        onSubmitted: (_) =>
+                          FocusScope.of(context).requestFocus(_sharesSoldNode)
                       ),
                     ),
                   ],
@@ -506,9 +536,11 @@ class _StockAddPageState extends State<StockAddPage> {
                     Container(
                       width: 220.0,
                       child: TextField(
+                        focusNode: _sharesSoldNode,
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _sharesSoldFieldController,
+                        textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           hintText: '# of shares sold, e.g: 500',
@@ -524,6 +556,8 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
+                        onSubmitted: (_) =>
+                          FocusScope.of(context).requestFocus(_commentsNode)
                       ),
                     ),
                   ],
@@ -542,6 +576,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     Container(
                       width: 220.0,
                       child: TextField(
+                        focusNode: _commentsNode,
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _commentsFieldController,
