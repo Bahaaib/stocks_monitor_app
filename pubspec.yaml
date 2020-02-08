@@ -15,7 +15,7 @@ dependencies:
   moor_flutter: ^1.4.0
   grouped_buttons: ^1.0.4
   progress_dialog: ^1.2.0
-
+  liquid_pull_to_refresh: ^1.1.1
 
   cupertino_icons: ^0.1.2
 

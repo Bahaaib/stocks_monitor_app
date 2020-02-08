@@ -5,6 +5,7 @@ import 'package:stock_monitor/bloc/stocks/bloc.dart';
 import 'package:stock_monitor/bloc/stocks/stocks_bloc.dart';
 import 'package:stock_monitor/bloc/stocks/stocks_event.dart';
 import 'package:stock_monitor/database/moor_database.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class BuyStocksPage extends StatefulWidget {
   @override
@@ -58,14 +59,20 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
     376,
   ];
 
+  Future<void> _refreshList() async {
+    _stocksBloc.dispatch(StocksAndRemoteRequested());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Buy List'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
+      body: LiquidPullToRefresh(
+        showChildOpacityTransition: false,
+        onRefresh: () => _refreshList(),
+        child: ListView(
           children: <Widget>[
             Table(
               children: [

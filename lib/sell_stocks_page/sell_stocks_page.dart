@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:stock_monitor/PODO/APIStock.dart';
 import 'package:stock_monitor/bloc/stocks/stocks_bloc.dart';
 import 'package:stock_monitor/bloc/stocks/stocks_event.dart';
@@ -58,14 +59,20 @@ class _SellStocksPageState extends State<SellStocksPage> {
     376,
   ];
 
+  Future<void> _refreshList() async {
+    _stocksBloc.dispatch(StocksAndRemoteRequested());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sell List'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
+      body: LiquidPullToRefresh(
+        showChildOpacityTransition: false,
+        onRefresh: () => _refreshList(),
+        child: ListView(
           children: <Widget>[
             Table(
               children: [
