@@ -37,3 +37,10 @@ class BuyStocksLevelsRequested extends StocksEvent {
 
   BuyStocksLevelsRequested(this.stocksList, this.remoteStocksList);
 }
+
+class SellStocksLevelsRequested extends StocksEvent {
+  final List<Stock> stocksList;
+  final List<APIStock> remoteStocksList;
+
+  SellStocksLevelsRequested(this.stocksList, this.remoteStocksList);
+}

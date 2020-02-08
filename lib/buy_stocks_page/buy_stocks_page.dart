@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:stock_monitor/PODO/APIStock.dart';
@@ -21,10 +20,6 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('SHOWN');
-      //_progressDialog.show();
-    });
     _stocksBloc.stocksStateSubject.listen((receivedState) {
       if (receivedState is StocksAndRemoteAreFetched) {
         _stocksList.clear();

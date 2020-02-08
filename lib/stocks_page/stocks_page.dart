@@ -85,16 +85,15 @@ class _StocksPageState extends State<StocksPage> {
         title: Text('Stocks List'),
         actions: <Widget>[
           IconButton(
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/add_stock_page',
-                    arguments: {'job': 'add'}).then((_) {
-                  _stocksBloc.dispatch(AllStocksRequested());
-                });
-              }),
+            icon: Icon(
+              Icons.call_missed_outgoing,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/sell_stock_page').then((_) {
+                _stocksBloc.dispatch(AllStocksRequested());
+              });
+            }),
           IconButton(
               icon: Icon(
                 Icons.shopping_cart,
@@ -104,7 +103,18 @@ class _StocksPageState extends State<StocksPage> {
                 Navigator.pushNamed(context, '/buy_stock_page').then((_) {
                   _stocksBloc.dispatch(AllStocksRequested());
                 });
-              })
+              }),
+          IconButton(
+            icon: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/add_stock_page',
+                arguments: {'job': 'add'}).then((_) {
+                _stocksBloc.dispatch(AllStocksRequested());
+              });
+            }),
         ],
       ),
       body: _stocksList.isNotEmpty && _remoteStocks.isNotEmpty

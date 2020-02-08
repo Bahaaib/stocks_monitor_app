@@ -7,11 +7,13 @@ import 'package:stock_monitor/bloc/bloc.dart';
 import 'package:stock_monitor/bloc/stocks/bloc.dart';
 import 'package:stock_monitor/database/moor_database.dart';
 import 'package:stock_monitor/utilities/buy_levels.dart';
+import 'package:stock_monitor/utilities/sell_levels.dart';
 
 class StocksBloc extends BLoC<StocksEvent> {
   final stocksStateSubject = BehaviorSubject<StocksState>();
   final _stockDatabase = GetIt.instance<StocksDatabase>();
   final _buyLevels = GetIt.instance<BuyLevels>();
+  final _sellLevels = GetIt.instance<SellLevels>();
   List<List<Stock>> _leveledStocks = List<List<Stock>>(12);
   List<Stock> _stocksList = List<Stock>();
   StocksList _remoteStocks;
@@ -44,6 +46,10 @@ class StocksBloc extends BLoC<StocksEvent> {
 
     if (event is BuyStocksLevelsRequested) {
       _getBuyStocksLevels(event.stocksList, event.remoteStocksList);
+    }
+
+    if (event is SellStocksLevelsRequested) {
+      _getSellStocksLevels(event.stocksList, event.remoteStocksList);
     }
   }
 
@@ -112,6 +118,34 @@ class StocksBloc extends BLoC<StocksEvent> {
     });
 
     stocksStateSubject.sink.add(BuyStocksLevelsAreFetched(_leveledStocks));
+  }
+
+  void _getSellStocksLevels(
+      List<Stock> stocksList, List<APIStock> remoteStocksList) {
+    _leveledStocks = List<List<Stock>>.generate(12, (_) => List<Stock>());
+    stocksList.forEach((stock) {
+      //Check according to target name
+      if (stock.targetName == 'Price') {
+        _sellLevels.calculateForStock(stock,
+            remoteStocksList[stocksList.indexOf(stock)].regularMarketPrice);
+      } else if (stock.targetName == 'Change') {
+        _sellLevels.calculateForStock(stock,
+            remoteStocksList[stocksList.indexOf(stock)].regularMarketChange);
+      } else if (stock.targetName == 'Change%') {
+        _sellLevels.calculateForStock(
+            stock,
+            remoteStocksList[stocksList.indexOf(stock)]
+                .regularMarketChangePercent);
+      }
+
+      int _index = _sellLevels.getStockLevel();
+      //arrange each stocks from the same level into a list of stocks
+      if (_index != -1) {
+        _leveledStocks[_index - 1].add(stock);
+      }
+    });
+
+    stocksStateSubject.sink.add(SellStocksLevelsAreFetched(_leveledStocks));
   }
 
   //For debugging only

@@ -64,7 +64,7 @@ class BuyLevels {
       return 11;
     } else if (_mTargetValue <= _buyLevel11 && _mTargetValue > _buyLevel2) {
       return 12;
-    }else{
+    } else {
       return -1;
     }
   }

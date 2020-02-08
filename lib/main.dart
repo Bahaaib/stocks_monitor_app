@@ -7,6 +7,7 @@ import 'package:stock_monitor/sell_stocks_page/sell_stocks_page.dart';
 import 'package:stock_monitor/stock_add_page/stock_add_page.dart';
 import 'package:stock_monitor/stocks_page/stocks_page.dart';
 import 'package:stock_monitor/utilities/buy_levels.dart';
+import 'package:stock_monitor/utilities/sell_levels.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     GetIt.instance.registerSingleton<StocksDatabase>(StocksDatabase());
     GetIt.instance.registerSingleton<BuyLevels>(BuyLevels());
+    GetIt.instance.registerSingleton<SellLevels>(SellLevels());
     GetIt.instance.registerSingleton<StocksBloc>(StocksBloc());
 
     return MaterialApp(
@@ -26,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => StocksPage(),
         '/add_stock_page': (context) => StockAddPage(),
         '/buy_stock_page': (context) => BuyStocksPage(),
+        '/sell_stock_page': (context) => SellStocksPage(),
       },
     );
   }

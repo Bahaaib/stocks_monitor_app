@@ -45,3 +45,9 @@ class BuyStocksLevelsAreFetched extends StocksState {
 
   BuyStocksLevelsAreFetched(this.leveledStocks);
 }
+
+class SellStocksLevelsAreFetched extends StocksState {
+  final List<List<Stock>> leveledStocks;
+
+  SellStocksLevelsAreFetched(this.leveledStocks);
+}

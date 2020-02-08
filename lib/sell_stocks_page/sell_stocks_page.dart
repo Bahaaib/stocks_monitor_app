@@ -1,25 +1,68 @@
 import 'package:flutter/material.dart';
-class SellStocksPage extends StatelessWidget{
-  final List<int> _levelsList = [
+import 'package:get_it/get_it.dart';
+import 'package:stock_monitor/PODO/APIStock.dart';
+import 'package:stock_monitor/bloc/stocks/stocks_bloc.dart';
+import 'package:stock_monitor/bloc/stocks/stocks_event.dart';
+import 'package:stock_monitor/bloc/stocks/stocks_state.dart';
+import 'package:stock_monitor/database/moor_database.dart';
+
+class SellStocksPage extends StatefulWidget {
+  @override
+  _SellStocksPageState createState() => _SellStocksPageState();
+}
+
+class _SellStocksPageState extends State<SellStocksPage> {
+  final _stocksBloc = GetIt.instance<StocksBloc>();
+  final _stocksList = List<Stock>();
+  final _remoteStocks = List<APIStock>();
+  final _leveledStocks = List<List<Stock>>();
+  final _rowHeights = List<double>();
+
+  @override
+  void initState() {
+    _stocksBloc.stocksStateSubject.listen((receivedState) {
+      if (receivedState is StocksAndRemoteAreFetched) {
+        _stocksList.clear();
+        _remoteStocks.clear();
+        _stocksList.addAll(receivedState.stocksList);
+        _remoteStocks.addAll(receivedState.stocks.stocksList);
+        _stocksBloc
+            .dispatch(SellStocksLevelsRequested(_stocksList, _remoteStocks));
+      }
+      if (receivedState is SellStocksLevelsAreFetched) {
+        setState(() {
+          _leveledStocks.clear();
+          _leveledStocks.addAll(receivedState.leveledStocks);
+          _calculateHeights();
+        });
+      }
+    });
+
+    _stocksBloc.dispatch(StocksAndRemoteRequested());
+
+    super.initState();
+  }
+
+  final List<int> _levelUnits = [
     1,
     2,
-    3,
     4,
-    5,
-    6,
     7,
-    8,
-    9,
-    10,
-    11,
     12,
+    20,
+    33,
+    54,
+    88,
+    143,
+    232,
+    376,
   ];
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sell List Screen'),
+        title: Text('Sell List'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -92,73 +135,123 @@ class SellStocksPage extends StatelessWidget{
               ],
             ),
             Table(
-              children: _levelsList.map((level) {
-                return TableRow(
-                  children: [
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text(level.toString()),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
-                    ),
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('50'),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('100'),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('13%')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('-20')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('+40')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                  ],
-                );
+              children: _leveledStocks.map((stocks) {
+                int _index = _leveledStocks.indexOf(stocks);
+                return TableRow(children: _buildLevelRow(_index));
               }).toList(),
             )
           ],
         ),
       ),
     );
+  }
+
+  //Calculate the height of each row relative to its children number
+  void _calculateHeights() {
+    _rowHeights.clear();
+    _leveledStocks.forEach((level) {
+      double _height = 0.0;
+      if (level.isEmpty) {
+        _rowHeights.add(50.0);
+      } else {
+        level.forEach((stock) {
+          _height = _height + 50.0;
+        });
+        _rowHeights.add(_height);
+      }
+    });
+  }
+
+  //Render each row
+  List<Widget> _buildLevelRow(int level) {
+    List<Widget> rowList = List<Widget>();
+    //Add the Level number cell as the first of each row
+    rowList.add(Container(
+      padding: EdgeInsets.only(left: 2.0, right: 2.0),
+      height: _rowHeights[level],
+      child: Center(
+        child: FittedBox(child: Text('Level ${level + 1}')),
+      ),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.black), color: Colors.grey),
+    ));
+
+    //Get the stocks list for a certain level
+    final List<Stock> stocksList = _leveledStocks[level];
+    List<Stock> categoryStocksList = List<Stock>();
+
+    //iterate over the number of stocks in each category
+    for (int i = 1; i < 6; i++) {
+      categoryStocksList = stocksList.where((stock) {
+        return stock.categoryId == i;
+      }).toList();
+
+      //If this category has no stocks, set a white empty cell
+      if (categoryStocksList.isEmpty) {
+        rowList.add(Container(
+          padding: EdgeInsets.only(left: 2.0, right: 2.0),
+          height: _rowHeights[level],
+          child: Center(
+            child: FittedBox(child: Text(' ')),
+          ),
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.black), color: Colors.white),
+        ));
+        //If this category has some stocks, add a column of cells
+      } else {
+        rowList.add(Column(
+          children: categoryStocksList.map((stock) {
+            int _index = _stocksList.indexOf(stock);
+
+            return Container(
+              padding: EdgeInsets.only(left: 2.0, right: 2.0),
+              height: 50.0,
+              child: Center(
+                child: FittedBox(
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                          '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
+                      Text(
+                        '${(_levelUnits[level] * 1000 / _remoteStocks[_index].regularMarketPrice).toStringAsFixed(4)}',
+                      ),
+                      Text('${stock.sharesBought}'),
+                    ],
+                  ),
+                ),
+              ),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+                color: _getCellColor(stock.color),
+              ),
+            );
+          }).toList(),
+        ));
+      }
+    }
+    return rowList;
+  }
+
+  Color _getCellColor(String color) {
+    switch (color) {
+      case 'Red':
+        return Colors.red;
+        break;
+      case 'Orange':
+        return Colors.orange;
+        break;
+      case 'Yellow':
+        return Colors.yellow;
+        break;
+      case 'Green':
+        return Colors.green;
+        break;
+      case 'Blue':
+        return Colors.blue;
+        break;
+      default:
+        return Colors.white;
+        break;
+    }
   }
 }
