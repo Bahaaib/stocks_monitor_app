@@ -6,10 +6,15 @@ import 'package:stock_monitor/PODO/StocksList.dart';
 import 'package:stock_monitor/bloc/bloc.dart';
 import 'package:stock_monitor/bloc/stocks/bloc.dart';
 import 'package:stock_monitor/database/moor_database.dart';
+import 'package:stock_monitor/utilities/buy_levels.dart';
 
 class StocksBloc extends BLoC<StocksEvent> {
   final stocksStateSubject = BehaviorSubject<StocksState>();
   final _stockDatabase = GetIt.instance<StocksDatabase>();
+  final _buyLevels = GetIt.instance<BuyLevels>();
+  List<List<Stock>> _leveledStocks = List<List<Stock>>(12);
+  List<Stock> _stocksList = List<Stock>();
+  StocksList _remoteStocks;
 
   @override
   void dispatch(StocksEvent event) {
@@ -29,8 +34,16 @@ class StocksBloc extends BLoC<StocksEvent> {
       _deleteStock(event.stock);
     }
 
-    if(event is StocksRemoteDataRequested){
+    if (event is StocksRemoteDataRequested) {
       _fetchStockDataFromApi(event.symbolsList);
+    }
+
+    if (event is StocksAndRemoteRequested) {
+      _collectStocksAndRemote();
+    }
+
+    if (event is BuyStocksLevelsRequested) {
+      _getBuyStocksLevels(event.stocksList, event.remoteStocksList);
     }
   }
 
@@ -57,23 +70,54 @@ class StocksBloc extends BLoC<StocksEvent> {
   }
 
   Future<void> _getAllStocks() async {
-    final List<Stock> stocks =
-        await _stockDatabase.getAllStocksInAlphabeticalOrder();
-    stocksStateSubject.sink.add(StocksAreFetched(stocks));
+    _stocksList = await _stockDatabase.getAllStocksInAlphabeticalOrder();
+    stocksStateSubject.sink.add(StocksAreFetched(_stocksList));
   }
 
   Future<void> _fetchStockDataFromApi(List<String> symbols) async {
     APIManager.clearSymbols();
     APIManager.parseStocksSymbols(symbols);
-    StocksList stocks = await APIManager.fetchStock();
-    stocksStateSubject.sink.add(StocksDataIsFetched(stocks));
+    _remoteStocks = await APIManager.fetchStock();
+    stocksStateSubject.sink.add(StocksDataIsFetched(_remoteStocks));
+  }
+
+  void _collectStocksAndRemote() {
+    stocksStateSubject.sink
+        .add(StocksAndRemoteAreFetched(_stocksList, _remoteStocks));
+  }
+
+  void _getBuyStocksLevels(
+      List<Stock> stocksList, List<APIStock> remoteStocksList) {
+    _leveledStocks = List<List<Stock>>.generate(12, (_) => List<Stock>());
+    stocksList.forEach((stock) {
+      //Check according to target name
+      if (stock.targetName == 'Price') {
+        _buyLevels.calculateForStock(stock,
+            remoteStocksList[stocksList.indexOf(stock)].regularMarketPrice);
+      } else if (stock.targetName == 'Change') {
+        _buyLevels.calculateForStock(stock,
+            remoteStocksList[stocksList.indexOf(stock)].regularMarketChange);
+      } else if (stock.targetName == 'Change%') {
+        _buyLevels.calculateForStock(
+            stock,
+            remoteStocksList[stocksList.indexOf(stock)]
+                .regularMarketChangePercent);
+      }
+
+      int _index = _buyLevels.getStockLevel();
+      //arrange each stocks from the same level into a list of stocks
+      if (_index != -1) {
+        _leveledStocks[_index - 1].add(stock);
+      }
+    });
+
+    stocksStateSubject.sink.add(BuyStocksLevelsAreFetched(_leveledStocks));
   }
 
   //For debugging only
   Future<void> _resetDatabase() async {
-   _stockDatabase.deleteAllFromTable();
+    _stockDatabase.deleteAllFromTable();
   }
-
 
   void dispose() {
     stocksStateSubject.close();

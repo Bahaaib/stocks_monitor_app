@@ -14,8 +14,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GetIt.instance.registerSingleton<StocksDatabase>(StocksDatabase());
-    GetIt.instance.registerSingleton<StocksBloc>(StocksBloc());
     GetIt.instance.registerSingleton<BuyLevels>(BuyLevels());
+    GetIt.instance.registerSingleton<StocksBloc>(StocksBloc());
+
     return MaterialApp(
       title: 'Stocks Monitor',
       theme: ThemeData(

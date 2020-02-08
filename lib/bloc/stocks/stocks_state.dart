@@ -27,10 +27,21 @@ class StockIsDeleted extends StocksState {
   StockIsDeleted(this.isSuccessful);
 }
 
-class StocksDataIsFetched extends StocksState{
+class StocksDataIsFetched extends StocksState {
   final StocksList stocks;
 
   StocksDataIsFetched(this.stocks);
+}
 
+class StocksAndRemoteAreFetched extends StocksState {
+  final List<Stock> stocksList;
+  final StocksList stocks;
 
+  StocksAndRemoteAreFetched(this.stocksList, this.stocks);
+}
+
+class BuyStocksLevelsAreFetched extends StocksState {
+  final List<List<Stock>> leveledStocks;
+
+  BuyStocksLevelsAreFetched(this.leveledStocks);
 }

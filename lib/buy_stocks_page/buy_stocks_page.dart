@@ -1,5 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:stock_monitor/PODO/APIStock.dart';
+import 'package:stock_monitor/bloc/stocks/bloc.dart';
+import 'package:stock_monitor/bloc/stocks/stocks_bloc.dart';
+import 'package:stock_monitor/bloc/stocks/stocks_event.dart';
+import 'package:stock_monitor/database/moor_database.dart';
 
 class BuyStocksPage extends StatefulWidget {
   @override
@@ -7,23 +13,56 @@ class BuyStocksPage extends StatefulWidget {
 }
 
 class _BuyStocksPageState extends State<BuyStocksPage> {
-  final List<int> _levelsList = [
-    12,
-    11,
-    10,
-    9,
-    8,
-    7,
-    6,
-    5,
-    4,
-    3,
-    2,
+  final _stocksBloc = GetIt.instance<StocksBloc>();
+  final _stocksList = List<Stock>();
+  final _remoteStocks = List<APIStock>();
+  final _leveledStocks = List<List<Stock>>();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('SHOWN');
+      //_progressDialog.show();
+    });
+    _stocksBloc.stocksStateSubject.listen((receivedState) {
+      if (receivedState is StocksAndRemoteAreFetched) {
+        _stocksList.clear();
+        _remoteStocks.clear();
+        _stocksList.addAll(receivedState.stocksList);
+        _remoteStocks.addAll(receivedState.stocks.stocksList);
+        _stocksBloc
+            .dispatch(BuyStocksLevelsRequested(_stocksList, _remoteStocks));
+      }
+      if (receivedState is BuyStocksLevelsAreFetched) {
+        setState(() {
+          _leveledStocks.clear();
+          _leveledStocks.addAll(receivedState.leveledStocks);
+        });
+      }
+    });
+
+    _stocksBloc.dispatch(StocksAndRemoteRequested());
+
+    super.initState();
+  }
+
+  final List<int> _levelUnits = [
     1,
+    2,
+    4,
+    7,
+    12,
+    20,
+    33,
+    54,
+    88,
+    143,
+    232,
+    376,
   ];
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Buy List Screen'),
@@ -99,73 +138,94 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
               ],
             ),
             Table(
-              children: _levelsList.map((level) {
-                return TableRow(
-                  children: [
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text(level.toString()),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.grey),
-                    ),
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('50'),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      height: 30.0,
-                      child: Center(
-                        child: Text('100'),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('13%')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('-20')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                      height: 30.0,
-                      child: Center(
-                        child: FittedBox(child: Text('+40')),
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                          color: Colors.white),
-                    ),
-                  ],
-                );
+              children: _leveledStocks.map((stocks) {
+                int _index = _leveledStocks.indexOf(stocks);
+                return TableRow(children: _buildLevelRow(_index));
               }).toList(),
             )
           ],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildLevelRow(int level) {
+    List<Widget> rowList = List<Widget>();
+    rowList.add(Container(
+      padding: EdgeInsets.only(left: 2.0, right: 2.0),
+      height: 50.0,
+      child: Center(
+        child: FittedBox(child: Text('${level + 1}')),
+      ),
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.black), color: Colors.grey),
+    ));
+    final List<Stock> stocksList = _leveledStocks[level];
+    List<Stock> categoryStocksList = List<Stock>();
+
+    for (int i = 1; i < 6; i++) {
+      categoryStocksList = stocksList.where((stock) {
+        return stock.categoryId == i;
+      }).toList();
+
+      if (categoryStocksList.isEmpty) {
+        rowList.add(Container(
+          padding: EdgeInsets.only(left: 2.0, right: 2.0),
+          height: 50.0,
+          child: Center(
+            child: FittedBox(child: Text(' ')),
+          ),
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.black), color: Colors.white),
+        ));
+      } else {
+        rowList.add(Column(
+          children: categoryStocksList.map((stock) {
+            Stock mStock = _stocksList
+                .firstWhere((nStock) => stock.symbol == stock.symbol);
+            int _index = _stocksList.indexOf(stock);
+            return Container(
+              padding: EdgeInsets.only(left: 2.0, right: 2.0),
+              height: 50.0,
+              child: Center(
+                child: FittedBox(
+                    child: Column(
+                  children: <Widget>[
+                    Text(
+                        '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
+                    Text(
+                        '${(_levelUnits[level] * 1000 / _remoteStocks[_index].regularMarketPrice).toStringAsFixed(4)}'),
+                    Text('${stock.sharesBought}'),
+                  ],
+                )),
+              ),
+              decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black), color: _gerCellColor(stock.color),),
+            );
+          }).toList(),
+        ));
+      }
+    }
+    return rowList;
+  }
+
+  Color _gerCellColor(String color) {
+    switch (color) {
+      case 'Red':
+        return Colors.red;
+        break;
+      case 'Orange':
+        return Colors.orange;
+        break;
+      case 'Yellow':
+        return Colors.yellow;
+        break;
+      case 'Green':
+        return Colors.green;
+        break;
+      case 'Blue':
+        return Colors.blue;
+        break;
+    }
   }
 }
