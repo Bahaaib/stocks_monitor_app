@@ -179,17 +179,33 @@ class _SellStocksPageState extends State<SellStocksPage> {
   //Calculate the height of each row relative to its children number
   void _calculateHeights() {
     _rowHeights.clear();
-    _leveledStocks.forEach((level) {
+    _leveledStocks.forEach((stocks) {
+      List<int> _categories = List<int>.generate(5, (i) => 0);
       double _height = 0.0;
-      if (level.isEmpty) {
+      if (stocks.isEmpty) {
         _rowHeights.add(50.0);
       } else {
-        level.forEach((stock) {
-          _height = _height + 50.0;
+        stocks.forEach((stock) {
+          for (int i = 1; i < 6; i++) {
+            if (stock.categoryId == i) {
+              _categories[i-1]++;
+            }
+          }
         });
-        _rowHeights.add(_height);
+        int _max = _getMaxLength(_categories);
+        _rowHeights.add(50.0 * _max);
       }
     });
+  }
+
+  int _getMaxLength(List<int> list){
+    int length = 0;
+    list.forEach((index) {
+      if(index > length){
+        length = index;
+      }
+    });
+    return length;
   }
 
   //Render each row
