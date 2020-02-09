@@ -76,7 +76,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/sell_stock_page').then((_) {
-                  _stocksBloc.dispatch(AllStocksRequested());
+                  _stocksBloc.dispatch(StocksAndRemoteRequested());
                 });
               }),
           IconButton(
@@ -87,7 +87,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
               onPressed: () {
                 Navigator.pushNamed(context, '/add_stock_page',
                     arguments: {'job': 'add'}).then((_) {
-                  _stocksBloc.dispatch(AllStocksRequested());
+                  _stocksBloc.dispatch(StocksAndRemoteRequested());
                 });
               }),
         ],
@@ -188,7 +188,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
         stocks.forEach((stock) {
           for (int i = 1; i < 6; i++) {
             if (stock.categoryId == i) {
-              _categories[i-1]++;
+              _categories[i - 1]++;
             }
           }
         });
@@ -198,10 +198,10 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
     });
   }
 
-  int _getMaxLength(List<int> list){
+  int _getMaxLength(List<int> list) {
     int length = 0;
     list.forEach((index) {
-      if(index > length){
+      if (index > length) {
         length = index;
       }
     });
@@ -249,25 +249,31 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
           children: categoryStocksList.map((stock) {
             int _index = _stocksList.indexOf(stock);
 
-            return Container(
-              padding: EdgeInsets.only(left: 2.0, right: 2.0),
-              height: 50.0,
-              child: Center(
-                child: FittedBox(
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                          '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
-                      Text(
-                          '${(_levelUnits[11 - level] * 1000 ~/ _remoteStocks[_index].regularMarketPrice)}'),
-                      Text('${stock.sharesBought}'),
-                    ],
+            return InkWell(
+              onTap: () => Navigator.pushNamed(context, '/add_stock_page',
+                  arguments: {'job': 'update', 'stock': stock}).then((_) {
+                _stocksBloc.dispatch(StocksAndRemoteRequested());
+              }),
+              child: Container(
+                padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                height: 50.0,
+                child: Center(
+                  child: FittedBox(
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                            '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
+                        Text(
+                            '${(_levelUnits[11 - level] * 1000 ~/ _remoteStocks[_index].regularMarketPrice)}'),
+                        Text('${stock.sharesBought}'),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-                color: _getCellColor(stock.color),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black),
+                  color: _getCellColor(stock.color),
+                ),
               ),
             );
           }).toList(),

@@ -19,7 +19,7 @@ class StocksBloc extends BLoC<StocksEvent> {
   StocksList _remoteStocks;
 
   @override
-  void dispatch(StocksEvent event) {
+  void dispatch(StocksEvent event) async{
     if (event is StockInsertRequested) {
       _insertStockIntoDatabase(event.stock);
     }
@@ -41,6 +41,7 @@ class StocksBloc extends BLoC<StocksEvent> {
     }
 
     if (event is StocksAndRemoteRequested) {
+      await _getAllStocks();
       _collectStocksAndRemote();
     }
 
@@ -92,8 +93,8 @@ class StocksBloc extends BLoC<StocksEvent> {
         .add(StocksAndRemoteAreFetched(_stocksList, _remoteStocks));
   }
 
-  void _getBuyStocksLevels(
-      List<Stock> stocksList, List<APIStock> remoteStocksList) {
+  Future<void> _getBuyStocksLevels(
+      List<Stock> stocksList, List<APIStock> remoteStocksList) async{
     _leveledStocks = List<List<Stock>>.generate(12, (_) => List<Stock>());
     stocksList.forEach((stock) {
       //Check according to target name
@@ -120,8 +121,8 @@ class StocksBloc extends BLoC<StocksEvent> {
     stocksStateSubject.sink.add(BuyStocksLevelsAreFetched(_leveledStocks));
   }
 
-  void _getSellStocksLevels(
-      List<Stock> stocksList, List<APIStock> remoteStocksList) {
+  Future<void> _getSellStocksLevels(
+      List<Stock> stocksList, List<APIStock> remoteStocksList) async{
     _leveledStocks = List<List<Stock>>.generate(12, (_) => List<Stock>());
     stocksList.forEach((stock) {
       //Check according to target name
