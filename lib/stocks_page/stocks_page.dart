@@ -82,7 +82,7 @@ class _StocksPageState extends State<StocksPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stocks List'),
+        title: Text('Stock List'),
         actions: <Widget>[
           IconButton(
               icon: Icon(
