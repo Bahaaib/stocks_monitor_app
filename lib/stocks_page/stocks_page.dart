@@ -85,8 +85,8 @@ class _StocksPageState extends State<StocksPage> {
         title: Text('Stock List'),
         actions: <Widget>[
           IconButton(
-              icon: Icon(
-                Icons.call_missed_outgoing,
+              icon: Image.asset(
+                'assets/ic_sell.png',
                 color: Colors.white,
               ),
               onPressed: () {
@@ -95,8 +95,8 @@ class _StocksPageState extends State<StocksPage> {
                 });
               }),
           IconButton(
-              icon: Icon(
-                Icons.shopping_cart,
+              icon: Image.asset(
+                'assets/ic_buy.png',
                 color: Colors.white,
               ),
               onPressed: () {
