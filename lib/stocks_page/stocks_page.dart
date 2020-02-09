@@ -221,7 +221,7 @@ class _StocksPageState extends State<StocksPage> {
                               padding: EdgeInsets.only(left: 2.0, right: 2.0),
                               child: Center(
                                 child: FittedBox(
-                                  child: Text('$_price'),
+                                  child: Text('${_price.toStringAsFixed(2)}'),
                                 ),
                               ),
                               decoration: BoxDecoration(
@@ -234,7 +234,7 @@ class _StocksPageState extends State<StocksPage> {
                               child: Center(
                                 child: FittedBox(
                                   child: Text(
-                                      '${_remoteStocks[_stocksList.indexOf(stock)].regularMarketChange}'),
+                                      '${_remoteStocks[_stocksList.indexOf(stock)].regularMarketChange.toStringAsFixed(2)}'),
                                 ),
                               ),
                               decoration: BoxDecoration(
@@ -247,7 +247,7 @@ class _StocksPageState extends State<StocksPage> {
                               child: Center(
                                 child: FittedBox(
                                   child: Text(
-                                      '${_remoteStocks[_stocksList.indexOf(stock)].regularMarketChangePercent}'),
+                                      '${_remoteStocks[_stocksList.indexOf(stock)].regularMarketChangePercent.toStringAsFixed(2)}'),
                                 ),
                               ),
                               decoration: BoxDecoration(
