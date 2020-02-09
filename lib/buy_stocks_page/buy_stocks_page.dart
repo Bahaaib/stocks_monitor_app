@@ -68,6 +68,29 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Buy List'),
+        actions: <Widget>[
+          IconButton(
+              icon: Image.asset(
+                'assets/ic_sell.png',
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/sell_stock_page').then((_) {
+                  _stocksBloc.dispatch(AllStocksRequested());
+                });
+              }),
+          IconButton(
+              icon: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/add_stock_page',
+                    arguments: {'job': 'add'}).then((_) {
+                  _stocksBloc.dispatch(AllStocksRequested());
+                });
+              }),
+        ],
       ),
       body: LiquidPullToRefresh(
         showChildOpacityTransition: false,
