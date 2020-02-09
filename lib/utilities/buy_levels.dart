@@ -36,6 +36,20 @@ class BuyLevels {
     _buyLevel10 = _buyLevel9 * (1 - (double.parse(stock.buyInterval) / 100.0));
     _buyLevel11 = _buyLevel10 * (1 - (double.parse(stock.buyInterval) / 100.0));
     _buyLevel12 = _buyLevel11 * (1 - (double.parse(stock.buyInterval) / 100.0));
+
+    print('SYMBOL :: ${stock.symbol}');
+    print('BL1 ==> $_buyLevel1');
+    print('BL2 ==> $_buyLevel2');
+    print('BL3 ==> $_buyLevel3');
+    print('BL4 ==> $_buyLevel4');
+    print('BL5 ==> $_buyLevel5');
+    print('BL6 ==> $_buyLevel6');
+    print('BL7 ==> $_buyLevel7');
+    print('BL8 ==> $_buyLevel8');
+    print('BL9 ==> $_buyLevel9');
+    print('BL10 ==> $_buyLevel10');
+    print('BL11 ==> $_buyLevel11');
+    print('BL12 ==> $_buyLevel12');
   }
 
   int getStockLevel() {
@@ -59,6 +73,7 @@ class BuyLevels {
     } else if (_mTargetValue <= _buyLevel8 && _mTargetValue > _buyLevel9) {
       return 9;
     } else if (_mTargetValue <= _buyLevel9 && _mTargetValue > _buyLevel10) {
+      print('$_mTargetValue <= $_buyLevel9 && > $_buyLevel10');
       return 10;
     } else if (_mTargetValue <= _buyLevel10 && _mTargetValue > _buyLevel1) {
       return 11;

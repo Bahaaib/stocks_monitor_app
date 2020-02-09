@@ -316,14 +316,16 @@ class _StocksPageState extends State<StocksPage> {
   }
 
   String _calcBTDiff(double price, Stock stock) {
-    return ((price - double.parse(stock.buyTarget)) /
-            ((double.parse(stock.buyTarget) * 100)))
-        .toStringAsFixed(6);
+    return (((price - double.parse(stock.buyTarget)) /
+                ((double.parse(stock.buyTarget)))) *
+            100)
+        .toStringAsFixed(2);
   }
 
   String _calcSTDiff(double price, Stock stock) {
-    return ((price - double.parse(stock.sellTarget)) /
-            ((double.parse(stock.sellTarget) * 100)))
-        .toStringAsFixed(6);
+    return (((price - double.parse(stock.sellTarget)) /
+                ((double.parse(stock.sellTarget)))) *
+            100)
+        .toStringAsFixed(2);
   }
 }

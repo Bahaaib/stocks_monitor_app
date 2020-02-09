@@ -47,6 +47,20 @@ class SellLevels {
         _sellLevel10 * (1 + (double.parse(stock.sellInterval) / 100.0));
     _sellLevel12 =
         _sellLevel11 * (1 + (double.parse(stock.sellInterval) / 100.0));
+
+    print('SYMBOL :: ${stock.symbol}');
+    print('SL1 ==> $_sellLevel1');
+    print('SL2 ==> $_sellLevel2');
+    print('SL3 ==> $_sellLevel3');
+    print('SL4 ==> $_sellLevel4');
+    print('SL5 ==> $_sellLevel5');
+    print('SL6 ==> $_sellLevel6');
+    print('SL7 ==> $_sellLevel7');
+    print('SL8 ==> $_sellLevel8');
+    print('SL9 ==> $_sellLevel9');
+    print('SL10 ==> $_sellLevel10');
+    print('SL11 ==> $_sellLevel11');
+    print('SL12 ==> $_sellLevel12');
   }
 
   int getStockLevel() {
@@ -60,6 +74,7 @@ class SellLevels {
     } else if (_mTargetValue >= _sellLevel3 && _mTargetValue < _sellLevel4) {
       return 4;
     } else if (_mTargetValue >= _sellLevel4 && _mTargetValue < _sellLevel5) {
+      print('$_mTargetValue >= $_sellLevel4 && < $_sellLevel5');
       return 5;
     } else if (_mTargetValue >= _sellLevel5 && _mTargetValue < _sellLevel6) {
       return 6;
