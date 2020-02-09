@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:grouped_buttons/grouped_buttons.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:stock_monitor/bloc/stocks/bloc.dart';
 import 'package:stock_monitor/database/moor_database.dart';
+import 'package:stock_monitor/group_orientation.dart';
+import 'package:stock_monitor/radio_group.dart';
 
 class StockAddPage extends StatefulWidget {
   @override
@@ -174,7 +175,7 @@ class _StockAddPageState extends State<StockAddPage> {
           child: Column(
             children: <Widget>[
               Container(
-                margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -185,6 +186,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 250.0,
+                      height: 40.0,
                       child: TextField(
                         autofocus: false,
                         textAlign: TextAlign.center,
@@ -193,7 +195,7 @@ class _StockAddPageState extends State<StockAddPage> {
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           hintText: 'Stock symbol, e.g. MSFT',
-                          hintStyle: TextStyle(fontSize: 16.0),
+                          hintStyle: TextStyle(fontSize: 14.0),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
                             borderSide: BorderSide(
@@ -205,14 +207,15 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
-                        onEditingComplete: ()=> FocusScope.of(context).requestFocus(_buyTargetNode),
+                        onEditingComplete: () =>
+                            FocusScope.of(context).requestFocus(_buyTargetNode),
                       ),
                     ),
                   ],
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 10.0),
+                margin: EdgeInsets.only(top: 0.0),
                 child: Row(
                   children: <Widget>[
                     SizedBox(
@@ -235,7 +238,7 @@ class _StockAddPageState extends State<StockAddPage> {
                           width: 50.0,
                           child: FittedBox(
                             child: Row(
-                              children: <Widget>[text, radio],
+                              children: <Widget>[radio, text],
                             ),
                           ),
                         );
@@ -252,37 +255,98 @@ class _StockAddPageState extends State<StockAddPage> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 10.0, left: 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                margin: EdgeInsets.only(top: 0.0, left: 20.0, right: 10.0),
+                child: Row(
                   children: <Widget>[
                     Text(
                       'Color:',
                       style: TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
-                    Container(
-                      child: RadioButtonGroup(
-                        orientation: GroupedButtonsOrientation.HORIZONTAL,
-                        labels: _colorsList,
-                        picked: _pickedColor,
-                        itemBuilder: (Radio radio, Text text, int i) {
-                          return Container(
-                            width: 68.0,
-                            child: FittedBox(
-                              child: Row(
-                                children: <Widget>[text, radio],
-                              ),
-                            ),
-                          );
-                        },
-                        onSelected: (value) {
-                          setState(() {
-                            _color = value;
-                            _pickedColor = null;
-                          });
-                        },
-                      ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      child: Radio(
+                          value: 'Red',
+                          groupValue: _pickedColor,
+                          onChanged: (value) {
+                            setState(() {
+                              _color = value;
+                              _pickedColor = value;
+                              _isInit = false;
+                            });
+                          }),
+                    ),
+                    Text(
+                      'Red',
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      child: Radio(
+                          value: 'Orange',
+                          groupValue: _pickedColor,
+                          onChanged: (value) {
+                            setState(() {
+                              _color = value;
+                              _pickedColor = value;
+                              _isInit = false;
+                            });
+                          }),
+                    ),
+                    Text(
+                      'Orange',
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      child: Radio(
+                          value: 'Yellow',
+                          groupValue: _pickedColor,
+                          onChanged: (value) {
+                            setState(() {
+                              _color = value;
+                              _pickedColor = value;
+                              _isInit = false;
+                            });
+                          }),
+                    ),
+                    Text(
+                      'Yellow',
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      child: Radio(
+                          value: 'Green',
+                          groupValue: _pickedColor,
+                          onChanged: (value) {
+                            setState(() {
+                              _color = value;
+                              _pickedColor = value;
+                              _isInit = false;
+                            });
+                          }),
+                    ),
+                    Text(
+                      'Green',
+                      style: TextStyle(fontSize: 12.0),
+                    ),
+                    Flexible(
+                      fit: FlexFit.tight,
+                      child: Radio(
+                          value: 'Blue',
+                          groupValue: _pickedColor,
+                          onChanged: (value) {
+                            setState(() {
+                              _color = value;
+                              _pickedColor = value;
+                              _isInit = false;
+                            });
+                          }),
+                    ),
+                    Text(
+                      'Blue',
+                      style: TextStyle(fontSize: 12.0),
                     ),
                   ],
                 ),
@@ -303,9 +367,9 @@ class _StockAddPageState extends State<StockAddPage> {
                       value: _targetNameSpinnerValue,
                       icon: Icon(Icons.arrow_drop_down),
                       iconSize: 24,
-                      elevation: 16,
+                      elevation: 8,
                       style: TextStyle(
-                          color: Theme.of(context).primaryColor, fontSize: 18),
+                          color: Theme.of(context).primaryColor, fontSize: 14),
                       underline: Container(height: 2, color: Colors.black),
                       onChanged: (String data) {
                         setState(() {
@@ -324,7 +388,7 @@ class _StockAddPageState extends State<StockAddPage> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -334,6 +398,7 @@ class _StockAddPageState extends State<StockAddPage> {
                           fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                     Container(
+                      height: 40.0,
                       width: 220.0,
                       child: TextField(
                         focusNode: _buyTargetNode,
@@ -356,15 +421,15 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
-                        onSubmitted: (_) =>
-                            FocusScope.of(context).requestFocus(_buyIntervalNode),
+                        onSubmitted: (_) => FocusScope.of(context)
+                            .requestFocus(_buyIntervalNode),
                       ),
                     ),
                   ],
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -374,37 +439,37 @@ class _StockAddPageState extends State<StockAddPage> {
                           fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                     Container(
+                      height: 40.0,
                       width: 220.0,
                       child: TextField(
-                        focusNode: _buyIntervalNode,
-                        autofocus: false,
-                        textAlign: TextAlign.center,
-                        controller: _buyIntervalFieldController,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: 'Enter a buy interval, e.g: 5%',
-                          hintStyle: TextStyle(fontSize: 12.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                              width: 0,
-                              style: BorderStyle.none,
+                          focusNode: _buyIntervalNode,
+                          autofocus: false,
+                          textAlign: TextAlign.center,
+                          controller: _buyIntervalFieldController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Enter a buy interval, e.g: 5%',
+                            hintStyle: TextStyle(fontSize: 12.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
                             ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(16),
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                        ),
-                        onSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(_sellTargetNode)
-                      ),
+                          onSubmitted: (_) => FocusScope.of(context)
+                              .requestFocus(_sellTargetNode)),
                     ),
                   ],
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -415,36 +480,36 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 220.0,
+                      height: 40.0,
                       child: TextField(
-                        focusNode: _sellTargetNode,
-                        autofocus: false,
-                        textAlign: TextAlign.center,
-                        controller: _sellTargetFieldController,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: 'Enter a sell target price, e.g. 250',
-                          hintStyle: TextStyle(fontSize: 12.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                              width: 0,
-                              style: BorderStyle.none,
+                          focusNode: _sellTargetNode,
+                          autofocus: false,
+                          textAlign: TextAlign.center,
+                          controller: _sellTargetFieldController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Enter a sell target price, e.g. 250',
+                            hintStyle: TextStyle(fontSize: 12.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
                             ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(16),
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                        ),
-                        onSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(_sellIntervalNode)
-                      ),
+                          onSubmitted: (_) => FocusScope.of(context)
+                              .requestFocus(_sellIntervalNode)),
                     ),
                   ],
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -455,36 +520,36 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 220.0,
+                      height: 40.0,
                       child: TextField(
-                        focusNode: _sellIntervalNode,
-                        autofocus: false,
-                        textAlign: TextAlign.center,
-                        controller: _sellIntervalFieldController,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: 'Enter a sell interval, e.g. 3%',
-                          hintStyle: TextStyle(fontSize: 12.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                              width: 0,
-                              style: BorderStyle.none,
+                          focusNode: _sellIntervalNode,
+                          autofocus: false,
+                          textAlign: TextAlign.center,
+                          controller: _sellIntervalFieldController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Enter a sell interval, e.g. 3%',
+                            hintStyle: TextStyle(fontSize: 12.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
                             ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(16),
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                        ),
-                        onSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(_sharesBoughtNode)
-                      ),
+                          onSubmitted: (_) => FocusScope.of(context)
+                              .requestFocus(_sharesBoughtNode)),
                     ),
                   ],
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -495,36 +560,36 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 205.0,
+                      height: 40.0,
                       child: TextField(
-                        focusNode: _sharesBoughtNode,
-                        autofocus: false,
-                        textAlign: TextAlign.center,
-                        controller: _sharesBoughtFieldController,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: '# of shares bought, e.g: 1000',
-                          hintStyle: TextStyle(fontSize: 12.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                              width: 0,
-                              style: BorderStyle.none,
+                          focusNode: _sharesBoughtNode,
+                          autofocus: false,
+                          textAlign: TextAlign.center,
+                          controller: _sharesBoughtFieldController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: '# of shares bought, e.g: 1000',
+                            hintStyle: TextStyle(fontSize: 12.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
                             ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(16),
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                        ),
-                        onSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(_sharesSoldNode)
-                      ),
+                          onSubmitted: (_) => FocusScope.of(context)
+                              .requestFocus(_sharesSoldNode)),
                     ),
                   ],
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -535,36 +600,36 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 220.0,
+                      height: 40.0,
                       child: TextField(
-                        focusNode: _sharesSoldNode,
-                        autofocus: false,
-                        textAlign: TextAlign.center,
-                        controller: _sharesSoldFieldController,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: '# of shares sold, e.g: 500',
-                          hintStyle: TextStyle(fontSize: 12.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                              width: 0,
-                              style: BorderStyle.none,
+                          focusNode: _sharesSoldNode,
+                          autofocus: false,
+                          textAlign: TextAlign.center,
+                          controller: _sharesSoldFieldController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: '# of shares sold, e.g: 500',
+                            hintStyle: TextStyle(fontSize: 12.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
                             ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(16),
                           ),
-                          filled: true,
-                          contentPadding: EdgeInsets.all(16),
-                        ),
-                        onSubmitted: (_) =>
-                          FocusScope.of(context).requestFocus(_commentsNode)
-                      ),
+                          onSubmitted: (_) => FocusScope.of(context)
+                              .requestFocus(_commentsNode)),
                     ),
                   ],
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 30.0, right: 20.0, left: 20.0),
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -575,6 +640,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 220.0,
+                      height: 40.0,
                       child: TextField(
                         focusNode: _commentsNode,
                         autofocus: false,
@@ -601,7 +667,7 @@ class _StockAddPageState extends State<StockAddPage> {
                 ),
               ),
               Container(
-                  margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                  margin: EdgeInsets.only(top: 10.0, bottom: 5.0),
                   child: RaisedButton(
                     onPressed: () {
                       if (_job == 'add') {
