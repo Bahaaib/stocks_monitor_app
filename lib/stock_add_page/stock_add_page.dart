@@ -63,7 +63,7 @@ class _StockAddPageState extends State<StockAddPage> {
           if (_progressDialog.isShowing()) {
             Navigator.of(context).pop();
           }
-          _showSuccessDialog(context);
+          Navigator.pop(context);
         } else {
           _progressDialog.dismiss();
           Navigator.of(context).pop();
@@ -76,7 +76,7 @@ class _StockAddPageState extends State<StockAddPage> {
 
         if (receivedState.isSuccessful) {
           Navigator.of(context).pop();
-          _showSuccessDialog(context);
+          Navigator.of(context).pop();
         } else {
           _progressDialog.dismiss();
           Navigator.of(context).pop();
@@ -713,34 +713,6 @@ class _StockAddPageState extends State<StockAddPage> {
     );
   }
 
-  _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        content: Container(
-          height: 100.0,
-          child: Center(
-            child: Text(
-              'Operation completed successfully!',
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        title: Container(
-          height: 50.0,
-          color: Colors.green,
-          child: Center(
-            child: Text(
-              'Success',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-        titlePadding: EdgeInsets.all(0.0),
-      ),
-    );
-  }
-
   _showErrorDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -755,9 +727,23 @@ class _StockAddPageState extends State<StockAddPage> {
           height: 50.0,
           color: Colors.red,
           child: Center(
-            child: Text(
-              'Error',
-              style: TextStyle(color: Colors.white),
+            child: Container(
+              margin: EdgeInsets.only(left: 20.0, right: 10.0),
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    'Error',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.clear,
+                      color: Colors.white,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  )
+                ],
+              ),
             ),
           ),
         ),
