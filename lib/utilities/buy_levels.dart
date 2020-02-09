@@ -53,31 +53,30 @@ class BuyLevels {
   }
 
   int getStockLevel() {
-    if (_mTargetValue <= double.parse(_mStock.buyTarget) &&
-        _mTargetValue > _buyLevel1) {
+    if (_mTargetValue <= _buyLevel1 && _mTargetValue > _buyLevel2) {
       return 1;
-    } else if (_mTargetValue <= _buyLevel1 && _mTargetValue > _buyLevel2) {
-      return 2;
     } else if (_mTargetValue <= _buyLevel2 && _mTargetValue > _buyLevel3) {
-      return 3;
+      return 2;
     } else if (_mTargetValue <= _buyLevel3 && _mTargetValue > _buyLevel4) {
-      return 4;
+      return 3;
     } else if (_mTargetValue <= _buyLevel4 && _mTargetValue > _buyLevel5) {
-      return 5;
+      return 4;
     } else if (_mTargetValue <= _buyLevel5 && _mTargetValue > _buyLevel6) {
-      return 6;
+      return 5;
     } else if (_mTargetValue <= _buyLevel6 && _mTargetValue > _buyLevel7) {
-      return 7;
+      return 6;
     } else if (_mTargetValue <= _buyLevel7 && _mTargetValue > _buyLevel8) {
-      return 8;
+      return 7;
     } else if (_mTargetValue <= _buyLevel8 && _mTargetValue > _buyLevel9) {
-      return 9;
+      return 8;
     } else if (_mTargetValue <= _buyLevel9 && _mTargetValue > _buyLevel10) {
       print('$_mTargetValue <= $_buyLevel9 && > $_buyLevel10');
-      return 10;
+      return 9;
     } else if (_mTargetValue <= _buyLevel10 && _mTargetValue > _buyLevel1) {
-      return 11;
+      return 10;
     } else if (_mTargetValue <= _buyLevel11 && _mTargetValue > _buyLevel2) {
+      return 11;
+    } else if (_mTargetValue <= _buyLevel2) {
       return 12;
     } else {
       return -1;
