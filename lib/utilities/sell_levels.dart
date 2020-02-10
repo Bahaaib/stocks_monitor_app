@@ -71,7 +71,7 @@ class SellLevels {
     } else if (_mTargetValue >= _sellLevel3 && _mTargetValue < _sellLevel4) {
       return 3;
     } else if (_mTargetValue >= _sellLevel4 && _mTargetValue < _sellLevel5) {
-      print('$_mTargetValue >= $_sellLevel4 && < $_sellLevel5');
+      //print('$_mTargetValue >= $_sellLevel4 && < $_sellLevel5');
       return 4;
     } else if (_mTargetValue >= _sellLevel5 && _mTargetValue < _sellLevel6) {
       return 5;
@@ -83,9 +83,9 @@ class SellLevels {
       return 8;
     } else if (_mTargetValue >= _sellLevel9 && _mTargetValue < _sellLevel10) {
       return 9;
-    } else if (_mTargetValue >= _sellLevel10 && _mTargetValue < _sellLevel1) {
+    } else if (_mTargetValue >= _sellLevel10 && _mTargetValue < _sellLevel11) {
       return 10;
-    } else if (_mTargetValue >= _sellLevel11 && _mTargetValue < _sellLevel2) {
+    } else if (_mTargetValue >= _sellLevel11 && _mTargetValue < _sellLevel12) {
       return 11;
     }else if (_mTargetValue >= _sellLevel12) {
       return 12;
