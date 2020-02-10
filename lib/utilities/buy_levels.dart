@@ -70,13 +70,13 @@ class BuyLevels {
     } else if (_mTargetValue <= _buyLevel8 && _mTargetValue > _buyLevel9) {
       return 8;
     } else if (_mTargetValue <= _buyLevel9 && _mTargetValue > _buyLevel10) {
-      print('$_mTargetValue <= $_buyLevel9 && > $_buyLevel10');
+      //print('$_mTargetValue <= $_buyLevel9 && > $_buyLevel10');
       return 9;
-    } else if (_mTargetValue <= _buyLevel10 && _mTargetValue > _buyLevel1) {
+    } else if (_mTargetValue <= _buyLevel10 && _mTargetValue > _buyLevel11) {
       return 10;
-    } else if (_mTargetValue <= _buyLevel11 && _mTargetValue > _buyLevel2) {
+    } else if (_mTargetValue <= _buyLevel11 && _mTargetValue > _buyLevel12) {
       return 11;
-    } else if (_mTargetValue <= _buyLevel2) {
+    } else if (_mTargetValue <= _buyLevel12) {
       return 12;
     } else {
       return -1;
