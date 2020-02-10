@@ -3,6 +3,13 @@ import 'package:stock_monitor/database/moor_database.dart';
 
 abstract class StocksState {}
 
+class StockValidationChecked extends StocksState {
+  final bool isExist;
+  final String job;
+
+  StockValidationChecked(this.isExist, this.job);
+}
+
 class StockInserted extends StocksState {
   bool isSuccessful;
 

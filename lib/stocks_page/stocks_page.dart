@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:stock_monitor/API/api_manager.dart';
 import 'package:stock_monitor/PODO/APIStock.dart';
 import 'package:stock_monitor/bloc/stocks/bloc.dart';
 import 'package:stock_monitor/bloc/stocks/stocks_bloc.dart';

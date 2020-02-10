@@ -27,6 +27,10 @@ class APIManager {
     });
   }
 
+  static void setStockSymbol(String symbol){
+    _requestedSymbols = symbol;
+  }
+
   static void clearSymbols() {
     _requestedSymbols = '';
   }

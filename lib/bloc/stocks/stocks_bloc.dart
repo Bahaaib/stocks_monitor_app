@@ -19,7 +19,11 @@ class StocksBloc extends BLoC<StocksEvent> {
   StocksList _remoteStocks;
 
   @override
-  void dispatch(StocksEvent event) async{
+  void dispatch(StocksEvent event) async {
+
+    if (event is StockValidationRequested) {
+      _checkStockDataIsValid(event.symbol, event.job);
+    }
     if (event is StockInsertRequested) {
       _insertStockIntoDatabase(event.stock);
     }
@@ -51,6 +55,17 @@ class StocksBloc extends BLoC<StocksEvent> {
 
     if (event is SellStocksLevelsRequested) {
       _getSellStocksLevels(event.stocksList, event.remoteStocksList);
+    }
+  }
+
+  Future<void> _checkStockDataIsValid(String symbol, String job) async {
+    APIManager.clearSymbols();
+    APIManager.setStockSymbol(symbol);
+    StocksList stocks = await APIManager.fetchStock();
+    if (stocks.stocksList.isEmpty) {
+      stocksStateSubject.sink.add(StockValidationChecked(false, job));
+    } else {
+      stocksStateSubject.sink.add(StockValidationChecked(true, job));
     }
   }
 
@@ -94,7 +109,7 @@ class StocksBloc extends BLoC<StocksEvent> {
   }
 
   Future<void> _getBuyStocksLevels(
-      List<Stock> stocksList, List<APIStock> remoteStocksList) async{
+      List<Stock> stocksList, List<APIStock> remoteStocksList) async {
     _leveledStocks = List<List<Stock>>.generate(12, (_) => List<Stock>());
     stocksList.forEach((stock) {
       //Check according to target name
@@ -122,7 +137,7 @@ class StocksBloc extends BLoC<StocksEvent> {
   }
 
   Future<void> _getSellStocksLevels(
-      List<Stock> stocksList, List<APIStock> remoteStocksList) async{
+      List<Stock> stocksList, List<APIStock> remoteStocksList) async {
     _leveledStocks = List<List<Stock>>.generate(12, (_) => List<Stock>());
     stocksList.forEach((stock) {
       //Check according to target name

@@ -15,7 +15,7 @@ class _StockAddPageState extends State<StockAddPage> {
   Stock _stock;
   Stock _pickedStock;
   int _categoryId = 1;
-  String _color;
+  String _color = 'Red';
   String _targetNameSpinnerValue = 'Price';
   int _index;
   ProgressDialog _progressDialog;
@@ -40,14 +40,6 @@ class _StockAddPageState extends State<StockAddPage> {
   final _commentsNode = FocusNode();
 
   final List<String> _categoriesList = ['1', '2', '3', '4', '5'];
-  final List<String> _colorsList = [
-    'Red',
-    'Orange',
-    'Yellow',
-    'Green',
-    'Blue',
-  ];
-
   final List<String> _targetNames = [
     'Price',
     'Change',
@@ -57,6 +49,22 @@ class _StockAddPageState extends State<StockAddPage> {
   @override
   void initState() {
     _stocksBloc.stocksStateSubject.listen((receivedState) {
+      if (receivedState is StockValidationChecked) {
+        if (receivedState.isExist) {
+          if (receivedState.job == 'add') {
+            _progressDialog.show();
+            _createStock();
+            _stocksBloc.dispatch(StockInsertRequested(_stock));
+          } else {
+            _progressDialog.show();
+            _updateStock();
+            _stocksBloc.dispatch(StockUpdateRequested(_pickedStock));
+          }
+        }else{
+          _progressDialog.dismiss();
+          _showErrorDialog(context, 'Stock symbol is not valid');
+        }
+      }
       if (receivedState is StockInserted) {
         print('STATE INSERT');
         if (receivedState.isSuccessful) {
@@ -67,7 +75,7 @@ class _StockAddPageState extends State<StockAddPage> {
         } else {
           _progressDialog.dismiss();
           Navigator.of(context).pop();
-          _showErrorDialog(context);
+          _showErrorDialog(context, 'All fields are required');
         }
       }
 
@@ -80,7 +88,7 @@ class _StockAddPageState extends State<StockAddPage> {
         } else {
           _progressDialog.dismiss();
           Navigator.of(context).pop();
-          _showErrorDialog(context);
+          _showErrorDialog(context, 'All fields are required');
         }
       }
 
@@ -94,7 +102,7 @@ class _StockAddPageState extends State<StockAddPage> {
         } else {
           _progressDialog.dismiss();
           Navigator.of(context).pop();
-          _showErrorDialog(context);
+          _showErrorDialog(context, 'All fields are required');
         }
       }
     });
@@ -139,9 +147,8 @@ class _StockAddPageState extends State<StockAddPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      _createStock();
-                      _stocksBloc.dispatch(StockInsertRequested(_stock));
-                      _progressDialog.show();
+                      _stocksBloc.dispatch(StockValidationRequested(
+                          _symbolFieldController.text, _job));
                     })
               ]
             : <Widget>[
@@ -160,9 +167,8 @@ class _StockAddPageState extends State<StockAddPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      _updateStock();
-                      _stocksBloc.dispatch(StockUpdateRequested(_pickedStock));
-                      _progressDialog.show();
+                      _stocksBloc.dispatch(StockValidationRequested(
+                          _symbolFieldController.text, _job));
                     }),
               ],
       ),
@@ -669,16 +675,8 @@ class _StockAddPageState extends State<StockAddPage> {
                   margin: EdgeInsets.only(top: 10.0, bottom: 5.0),
                   child: RaisedButton(
                     onPressed: () {
-                      if (_job == 'add') {
-                        _progressDialog.show();
-                        _createStock();
-                        _stocksBloc.dispatch(StockInsertRequested(_stock));
-                      } else {
-                        _updateStock();
-                        _stocksBloc
-                            .dispatch(StockUpdateRequested(_pickedStock));
-                        _progressDialog.show();
-                      }
+                      _stocksBloc.dispatch(StockValidationRequested(
+                          _symbolFieldController.text, _job));
                     },
                     color: Colors.white,
                     splashColor: Colors.green[100],
@@ -713,14 +711,14 @@ class _StockAddPageState extends State<StockAddPage> {
     );
   }
 
-  _showErrorDialog(BuildContext context) {
+  _showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         content: Container(
           height: 100.0,
           child: Center(
-            child: Text('All fields are required'),
+            child: Text(message, textAlign: TextAlign.center,),
           ),
         ),
         title: Container(
@@ -729,7 +727,8 @@ class _StockAddPageState extends State<StockAddPage> {
           child: Center(
             child: Container(
               margin: EdgeInsets.only(left: 20.0, right: 10.0),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
                     'Error',

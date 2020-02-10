@@ -3,6 +3,13 @@ import 'package:stock_monitor/database/moor_database.dart';
 
 abstract class StocksEvent {}
 
+class StockValidationRequested extends StocksEvent {
+  final String symbol;
+  final String job;
+
+  StockValidationRequested(this.symbol, this.job);
+}
+
 class StockInsertRequested extends StocksEvent {
   final Stock stock;
 
