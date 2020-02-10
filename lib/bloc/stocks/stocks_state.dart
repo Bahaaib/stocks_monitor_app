@@ -3,6 +3,12 @@ import 'package:stock_monitor/database/moor_database.dart';
 
 abstract class StocksState {}
 
+class ConnectivityStatusChecked extends StocksState {
+  bool isConnected;
+
+  ConnectivityStatusChecked(this.isConnected);
+}
+
 class StockValidationChecked extends StocksState {
   final bool isExist;
   final String job;

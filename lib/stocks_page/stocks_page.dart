@@ -15,18 +15,37 @@ class StocksPage extends StatefulWidget {
 
 class _StocksPageState extends State<StocksPage> {
   final _stocksBloc = GetIt.instance<StocksBloc>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _stocksList = List<Stock>();
   final _requestedSymbols = List<String>();
   final _remoteStocks = List<APIStock>();
   ProgressDialog _progressDialog;
+  bool _isConnected = true;
+  SnackBar snackBar;
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      print('SHOWN');
-      _progressDialog.show();
+      if (_isConnected) {
+        _progressDialog.show();
+      } else {
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      }
     });
     _stocksBloc.stocksStateSubject.listen((receivedState) {
+      if (receivedState is ConnectivityStatusChecked) {
+        if (!receivedState.isConnected) {
+          _progressDialog.dismiss();
+          setState(() {
+            _isConnected = false;
+          });
+        } else {
+          setState(() {
+            _isConnected = true;
+          });
+          _stocksBloc.dispatch(AllStocksRequested());
+        }
+      }
       if (receivedState is StocksAreFetched) {
         if (!_progressDialog.isShowing()) {
           print('SHOWN');
@@ -52,7 +71,8 @@ class _StocksPageState extends State<StocksPage> {
       }
     });
 
-    _stocksBloc.dispatch(AllStocksRequested());
+    _stocksBloc.dispatch(ConnectivityStatusRequested());
+
     super.initState();
   }
 
@@ -79,7 +99,29 @@ class _StocksPageState extends State<StocksPage> {
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
     _initProgressDialog();
 
+    if(!_isConnected){
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+
+    snackBar = SnackBar(
+        content: Row(
+      children: <Widget>[
+        Icon(
+          Icons.warning,
+          color: Colors.white,
+        ),
+        SizedBox(
+          width: 10.0,
+        ),
+        Text(
+          'No Internet connection',
+          style: TextStyle(color: Colors.white),
+        )
+      ],
+    ));
+
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Stock List'),
         actions: <Widget>[

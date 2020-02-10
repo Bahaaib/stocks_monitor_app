@@ -8,6 +8,7 @@ import 'package:stock_monitor/bloc/stocks/bloc.dart';
 import 'package:stock_monitor/database/moor_database.dart';
 import 'package:stock_monitor/utilities/buy_levels.dart';
 import 'package:stock_monitor/utilities/sell_levels.dart';
+import 'package:connectivity/connectivity.dart';
 
 class StocksBloc extends BLoC<StocksEvent> {
   final stocksStateSubject = BehaviorSubject<StocksState>();
@@ -20,6 +21,9 @@ class StocksBloc extends BLoC<StocksEvent> {
 
   @override
   void dispatch(StocksEvent event) async {
+    if (event is ConnectivityStatusRequested) {
+      _checkConnectivity();
+    }
 
     if (event is StockValidationRequested) {
       _checkStockDataIsValid(event.symbol, event.job);
@@ -55,6 +59,15 @@ class StocksBloc extends BLoC<StocksEvent> {
 
     if (event is SellStocksLevelsRequested) {
       _getSellStocksLevels(event.stocksList, event.remoteStocksList);
+    }
+  }
+
+  Future<void> _checkConnectivity() async {
+    ConnectivityResult _result = await Connectivity().checkConnectivity();
+    if (_result == ConnectivityResult.none) {
+      stocksStateSubject.sink.add(ConnectivityStatusChecked(false));
+    } else {
+      stocksStateSubject.sink.add(ConnectivityStatusChecked(true));
     }
   }
 
