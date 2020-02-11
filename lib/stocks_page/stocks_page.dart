@@ -140,7 +140,7 @@ class _StocksPageState extends State<StocksPage> {
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/sell_stock_page').then((_) {
-                  _stocksBloc.dispatch(AllStocksRequested());
+                  _stocksBloc.dispatch(ConnectivityStatusRequested());
                 });
               }),
           IconButton(
@@ -150,7 +150,7 @@ class _StocksPageState extends State<StocksPage> {
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/buy_stock_page').then((_) {
-                  _stocksBloc.dispatch(AllStocksRequested());
+                  _stocksBloc.dispatch(ConnectivityStatusRequested());
                 });
               }),
           IconButton(
@@ -161,7 +161,7 @@ class _StocksPageState extends State<StocksPage> {
               onPressed: () {
                 Navigator.pushNamed(context, '/add_stock_page',
                     arguments: {'job': 'add'}).then((_) {
-                  _stocksBloc.dispatch(AllStocksRequested());
+                  _stocksBloc.dispatch(ConnectivityStatusRequested());
                 });
               }),
         ],
@@ -271,7 +271,7 @@ class _StocksPageState extends State<StocksPage> {
                                       'job': 'update',
                                       'stock': stock
                                     }).then((_) {
-                                  _stocksBloc.dispatch(AllStocksRequested());
+                                  _stocksBloc.dispatch(ConnectivityStatusRequested());
                                 });
                               },
                             ),

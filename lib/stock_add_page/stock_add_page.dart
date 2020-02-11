@@ -18,7 +18,6 @@ class _StockAddPageState extends State<StockAddPage> {
   String _color = 'Red';
   String _targetNameSpinnerValue = 'Price';
   int _index;
-  ProgressDialog _progressDialog;
   bool _isInit = true;
   String _pickedColor = 'Red';
 
@@ -57,30 +56,30 @@ class _StockAddPageState extends State<StockAddPage> {
     _stocksBloc.stocksStateSubject.listen((receivedState) {
       if (receivedState is StockValidationChecked) {
         if (receivedState.isExist) {
+          print('STOCK EXISTS');
           if (receivedState.job == 'add') {
-            _progressDialog.show();
             _createStock();
             _stocksBloc.dispatch(StockInsertRequested(_stock));
           } else {
-            _progressDialog.show();
             _updateStock();
             _stocksBloc.dispatch(StockUpdateRequested(_pickedStock));
           }
         } else {
-          _progressDialog.dismiss();
           _showErrorDialog(context, 'Stock symbol is not valid');
         }
       }
       if (receivedState is StockInserted) {
         print('STATE INSERT');
         if (receivedState.isSuccessful) {
-          if (_progressDialog.isShowing()) {
+          if (Navigator.of(context).canPop()) {
+            print('CAN POP');
             Navigator.of(context).pop();
           }
-          Navigator.pop(context);
         } else {
-          _progressDialog.dismiss();
-          Navigator.of(context).pop();
+          if (Navigator.of(context).canPop()) {
+            print('CAN POP');
+            Navigator.of(context).pop();
+          }
           _showErrorDialog(context, 'All fields are required');
         }
       }
@@ -89,11 +88,15 @@ class _StockAddPageState extends State<StockAddPage> {
         print('STATE UPDATE');
 
         if (receivedState.isSuccessful) {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
+          if (Navigator.of(context).canPop()) {
+            print('CAN POP');
+            Navigator.of(context).pop();
+          }
         } else {
-          _progressDialog.dismiss();
-          Navigator.of(context).pop();
+          if (Navigator.of(context).canPop()) {
+            print('CAN POP');
+            Navigator.of(context).pop();
+          }
           _showErrorDialog(context, 'All fields are required');
         }
       }
@@ -101,31 +104,21 @@ class _StockAddPageState extends State<StockAddPage> {
       if (receivedState is StockIsDeleted) {
         print('STATE DELETE');
         if (receivedState.isSuccessful) {
-          if (_progressDialog.isShowing()) {
+          if (Navigator.of(context).canPop()) {
+            print('CAN POP');
             Navigator.of(context).pop();
           }
-          Navigator.of(context).pop();
         } else {
-          _progressDialog.dismiss();
-          Navigator.of(context).pop();
+          if (Navigator.of(context).canPop()) {
+            print('CAN POP');
+            Navigator.of(context).pop();
+          }
           _showErrorDialog(context, 'All fields are required');
         }
       }
     });
 
     super.initState();
-  }
-
-  void _initProgressDialog() {
-    _progressDialog.style(
-      message: 'Saving Data...',
-      backgroundColor: Colors.white,
-      progressWidget: CircularProgressIndicator(),
-      elevation: 10.0,
-      insetAnimCurve: Curves.easeInOut,
-      messageTextStyle: TextStyle(
-          color: Colors.black, fontSize: 14.0, fontWeight: FontWeight.w600),
-    );
   }
 
   @override
@@ -140,9 +133,6 @@ class _StockAddPageState extends State<StockAddPage> {
       _isInit = false;
     }
 
-    _progressDialog = ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
-    _initProgressDialog();
     return Scaffold(
       appBar: AppBar(
         title: Text(_job == 'add' ? 'Add Stock' : 'Update Stock'),
@@ -154,13 +144,13 @@ class _StockAddPageState extends State<StockAddPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      if(_areAllInputsValid()){
+                      if (_areAllInputsValid()) {
                         _stocksBloc.dispatch(StockValidationRequested(
-                          _symbolFieldController.text, _job));
-                      }else{
-                        _showErrorDialog(context, 'Please check the invalid inputs');
+                            _symbolFieldController.text, _job));
+                      } else {
+                        _showErrorDialog(
+                            context, 'Please check the invalid inputs');
                       }
-
                     })
               ]
             : <Widget>[
@@ -171,7 +161,6 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     onPressed: () {
                       _stocksBloc.dispatch(StockDeleteRequested(_pickedStock));
-                      _progressDialog.show();
                     }),
                 IconButton(
                     icon: Icon(
@@ -179,11 +168,12 @@ class _StockAddPageState extends State<StockAddPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      if(_areAllInputsValid()){
+                      if (_areAllInputsValid()) {
                         _stocksBloc.dispatch(StockValidationRequested(
-                          _symbolFieldController.text, _job));
-                      }else{
-                        _showErrorDialog(context, 'Please check the invalid inputs');
+                            _symbolFieldController.text, _job));
+                      } else {
+                        _showErrorDialog(
+                            context, 'Please check the invalid inputs');
                       }
                     }),
               ],
@@ -727,11 +717,12 @@ class _StockAddPageState extends State<StockAddPage> {
                   margin: EdgeInsets.only(top: 10.0, bottom: 5.0),
                   child: RaisedButton(
                     onPressed: () {
-                      if(_areAllInputsValid()){
+                      if (_areAllInputsValid()) {
                         _stocksBloc.dispatch(StockValidationRequested(
-                          _symbolFieldController.text, _job));
-                      }else{
-                        _showErrorDialog(context, 'Please check the invalid inputs');
+                            _symbolFieldController.text, _job));
+                      } else {
+                        _showErrorDialog(
+                            context, 'Please check the invalid inputs');
                       }
                     },
                     color: Colors.white,
