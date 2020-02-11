@@ -137,6 +137,7 @@ class _StockAddPageState extends State<StockAddPage> {
 
     if (_job == 'update' && _isInit) {
       _addInitialValues(_pickedStock);
+      _isInit = false;
     }
 
     _progressDialog = ProgressDialog(context,
