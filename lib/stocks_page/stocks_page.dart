@@ -277,8 +277,9 @@ class _StocksPageState extends State<StocksPage> {
                             ),
                             Container(
                               height: 30.0,
-                              padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                              child: Center(
+                              padding: EdgeInsets.only(right: 2.0),
+                              child: Align(
+                                alignment: Alignment.centerRight,
                                 child: FittedBox(
                                   child: Text('${_price.toStringAsFixed(2)}'),
                                 ),
@@ -289,8 +290,9 @@ class _StocksPageState extends State<StocksPage> {
                             ),
                             Container(
                               height: 30.0,
-                              padding: EdgeInsets.only(left: 2.0, right: 2.0),
-                              child: Center(
+                              padding: EdgeInsets.only(right: 5.0),
+                              child: Align(
+                                alignment: Alignment.centerRight,
                                 child: FittedBox(
                                   child: Text(
                                     '${_change.toStringAsFixed(2)}',
@@ -298,6 +300,7 @@ class _StocksPageState extends State<StocksPage> {
                                         color: _change < 0
                                             ? Colors.red
                                             : Colors.green),
+                                    textAlign: TextAlign.right,
                                   ),
                                 ),
                               ),
@@ -306,9 +309,10 @@ class _StocksPageState extends State<StocksPage> {
                                   color: Colors.white),
                             ),
                             Container(
-                              padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                              padding: EdgeInsets.only(right: 5.0),
                               height: 30.0,
-                              child: Center(
+                              child: Align(
+                                alignment: Alignment.centerRight,
                                 child: FittedBox(
                                   child: Text(
                                     '${_changePercentage.toStringAsFixed(2)}',
@@ -324,9 +328,10 @@ class _StocksPageState extends State<StocksPage> {
                                   color: Colors.white),
                             ),
                             Container(
-                              padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                              padding: EdgeInsets.only(right: 5.0),
                               height: 30.0,
-                              child: Center(
+                              child: Align(
+                                alignment: Alignment.centerRight,
                                 child: FittedBox(
                                   child: Text(
                                     '$_buyTDiff',
@@ -342,9 +347,10 @@ class _StocksPageState extends State<StocksPage> {
                                   color: Colors.white),
                             ),
                             Container(
-                              padding: EdgeInsets.only(left: 2.0, right: 2.0),
+                              padding: EdgeInsets.only(right: 5.0),
                               height: 30.0,
-                              child: Center(
+                              child: Align(
+                                alignment: Alignment.centerRight,
                                 child: FittedBox(
                                   child: Text(
                                     '$_sellTDiff',
