@@ -99,7 +99,7 @@ class _StocksPageState extends State<StocksPage> {
         type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
     _initProgressDialog();
 
-    if(!_isConnected){
+    if (!_isConnected) {
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }
 
@@ -125,6 +125,14 @@ class _StocksPageState extends State<StocksPage> {
       appBar: AppBar(
         title: Text('Stock List'),
         actions: <Widget>[
+          IconButton(
+              icon: Icon(
+                Icons.autorenew,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                _stocksBloc.dispatch(ConnectivityStatusRequested());
+              }),
           IconButton(
               icon: Image.asset(
                 'assets/ic_sell.png',
@@ -233,6 +241,16 @@ class _StocksPageState extends State<StocksPage> {
 
                       if (index < _remoteStocks.length) {
                         double _price = _remoteStocks[index].regularMarketPrice;
+                        double _change =
+                            _remoteStocks[_stocksList.indexOf(stock)]
+                                .regularMarketChange;
+                        double _changePercentage =
+                            _remoteStocks[_stocksList.indexOf(stock)]
+                                .regularMarketChangePercent;
+                        double _buyTDiff =
+                            double.parse(_calcBTDiff(_price, stock));
+                        double _sellTDiff =
+                            double.parse(_calcSTDiff(_price, stock));
                         return TableRow(
                           children: [
                             InkWell(
@@ -275,7 +293,12 @@ class _StocksPageState extends State<StocksPage> {
                               child: Center(
                                 child: FittedBox(
                                   child: Text(
-                                      '${_remoteStocks[_stocksList.indexOf(stock)].regularMarketChange.toStringAsFixed(2)}'),
+                                    '${_change.toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                        color: _change < 0
+                                            ? Colors.red
+                                            : Colors.green),
+                                  ),
                                 ),
                               ),
                               decoration: BoxDecoration(
@@ -288,7 +311,12 @@ class _StocksPageState extends State<StocksPage> {
                               child: Center(
                                 child: FittedBox(
                                   child: Text(
-                                      '${_remoteStocks[_stocksList.indexOf(stock)].regularMarketChangePercent.toStringAsFixed(2)}'),
+                                    '${_changePercentage.toStringAsFixed(2)}',
+                                    style: TextStyle(
+                                        color: _changePercentage < 0
+                                            ? Colors.red
+                                            : Colors.green),
+                                  ),
                                 ),
                               ),
                               decoration: BoxDecoration(
@@ -300,8 +328,14 @@ class _StocksPageState extends State<StocksPage> {
                               height: 30.0,
                               child: Center(
                                 child: FittedBox(
-                                    child:
-                                        Text('${_calcBTDiff(_price, stock)}')),
+                                  child: Text(
+                                    '$_buyTDiff',
+                                    style: TextStyle(
+                                        color: _buyTDiff < 0
+                                            ? Colors.red
+                                            : Colors.green),
+                                  ),
+                                ),
                               ),
                               decoration: BoxDecoration(
                                   border: Border.all(color: Colors.black),
@@ -312,8 +346,14 @@ class _StocksPageState extends State<StocksPage> {
                               height: 30.0,
                               child: Center(
                                 child: FittedBox(
-                                    child:
-                                        Text('${_calcSTDiff(_price, stock)}')),
+                                  child: Text(
+                                    '$_sellTDiff',
+                                    style: TextStyle(
+                                        color: _sellTDiff < 0
+                                            ? Colors.red
+                                            : Colors.green),
+                                  ),
+                                ),
                               ),
                               decoration: BoxDecoration(
                                   border: Border.all(color: Colors.black),
