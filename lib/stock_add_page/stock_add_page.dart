@@ -696,13 +696,14 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 220.0,
-                      height: 40.0,
+                      height: 60.0,
                       child: TextField(
                         focusNode: _commentsNode,
                         autofocus: false,
                         textAlign: TextAlign.center,
                         controller: _commentsFieldController,
                         keyboardType: TextInputType.text,
+                        scrollPadding: EdgeInsets.all(0.0),
                         decoration: InputDecoration(
                           hintText: 'Some notes. e.g: sell when price > 250',
                           hintStyle: TextStyle(fontSize: 12.0),
