@@ -39,6 +39,12 @@ class _StockAddPageState extends State<StockAddPage> {
   final _sharesSoldNode = FocusNode();
   final _commentsNode = FocusNode();
 
+  bool _isValidBuyTarget = true;
+  bool _isValidBuyInterval = true;
+  bool _isValidSellTarget = true;
+  bool _isValidSellInterval = true;
+  String _errorMessage = 'Value must be larger than zero';
+
   final List<String> _categoriesList = ['1', '2', '3', '4', '5'];
   final List<String> _targetNames = [
     'Price',
@@ -60,7 +66,7 @@ class _StockAddPageState extends State<StockAddPage> {
             _updateStock();
             _stocksBloc.dispatch(StockUpdateRequested(_pickedStock));
           }
-        }else{
+        } else {
           _progressDialog.dismiss();
           _showErrorDialog(context, 'Stock symbol is not valid');
         }
@@ -147,8 +153,13 @@ class _StockAddPageState extends State<StockAddPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      _stocksBloc.dispatch(StockValidationRequested(
+                      if(_areAllInputsValid()){
+                        _stocksBloc.dispatch(StockValidationRequested(
                           _symbolFieldController.text, _job));
+                      }else{
+                        _showErrorDialog(context, 'Please check the invalid inputs');
+                      }
+
                     })
               ]
             : <Widget>[
@@ -167,8 +178,12 @@ class _StockAddPageState extends State<StockAddPage> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      _stocksBloc.dispatch(StockValidationRequested(
+                      if(_areAllInputsValid()){
+                        _stocksBloc.dispatch(StockValidationRequested(
                           _symbolFieldController.text, _job));
+                      }else{
+                        _showErrorDialog(context, 'Please check the invalid inputs');
+                      }
                     }),
               ],
       ),
@@ -403,7 +418,7 @@ class _StockAddPageState extends State<StockAddPage> {
                           fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                     Container(
-                      height: 40.0,
+                      height: 60.0,
                       width: 220.0,
                       child: TextField(
                         focusNode: _buyTargetNode,
@@ -413,6 +428,8 @@ class _StockAddPageState extends State<StockAddPage> {
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
+                          helperText: ' ',
+                          errorText: !_isValidBuyTarget ? _errorMessage : null,
                           hintText: 'Enter a buy target price, e.g. 180',
                           hintStyle: TextStyle(fontSize: 12.0),
                           border: OutlineInputBorder(
@@ -426,8 +443,13 @@ class _StockAddPageState extends State<StockAddPage> {
                           filled: true,
                           contentPadding: EdgeInsets.all(16),
                         ),
-                        onSubmitted: (_) => FocusScope.of(context)
-                            .requestFocus(_buyIntervalNode),
+                        onSubmitted: (_) {
+                          setState(() {
+                            _isValidBuyTarget =
+                                _isValidNumber(_buyTargetFieldController.text);
+                          });
+                          FocusScope.of(context).requestFocus(_buyIntervalNode);
+                        },
                       ),
                     ),
                   ],
@@ -444,7 +466,7 @@ class _StockAddPageState extends State<StockAddPage> {
                           fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                     Container(
-                      height: 40.0,
+                      height: 60.0,
                       width: 220.0,
                       child: TextField(
                           focusNode: _buyIntervalNode,
@@ -454,6 +476,9 @@ class _StockAddPageState extends State<StockAddPage> {
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
+                            helperText: ' ',
+                            errorText:
+                                !_isValidBuyInterval ? _errorMessage : null,
                             hintText: 'Enter a buy interval, e.g: 5%',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
@@ -467,8 +492,14 @@ class _StockAddPageState extends State<StockAddPage> {
                             filled: true,
                             contentPadding: EdgeInsets.all(16),
                           ),
-                          onSubmitted: (_) => FocusScope.of(context)
-                              .requestFocus(_sellTargetNode)),
+                          onSubmitted: (_) {
+                            setState(() {
+                              _isValidBuyInterval = _isValidNumber(
+                                  _buyIntervalFieldController.text);
+                            });
+                            FocusScope.of(context)
+                                .requestFocus(_sellTargetNode);
+                          }),
                     ),
                   ],
                 ),
@@ -485,7 +516,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 220.0,
-                      height: 40.0,
+                      height: 60.0,
                       child: TextField(
                           focusNode: _sellTargetNode,
                           autofocus: false,
@@ -494,6 +525,9 @@ class _StockAddPageState extends State<StockAddPage> {
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
+                            helperText: ' ',
+                            errorText:
+                                !_isValidSellTarget ? _errorMessage : null,
                             hintText: 'Enter a sell target price, e.g. 250',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
@@ -507,8 +541,14 @@ class _StockAddPageState extends State<StockAddPage> {
                             filled: true,
                             contentPadding: EdgeInsets.all(16),
                           ),
-                          onSubmitted: (_) => FocusScope.of(context)
-                              .requestFocus(_sellIntervalNode)),
+                          onSubmitted: (_) {
+                            setState(() {
+                              _isValidSellTarget = _isValidNumber(
+                                  _sellTargetFieldController.text);
+                            });
+                            FocusScope.of(context)
+                                .requestFocus(_sellIntervalNode);
+                          }),
                     ),
                   ],
                 ),
@@ -525,7 +565,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     Container(
                       width: 220.0,
-                      height: 40.0,
+                      height: 60.0,
                       child: TextField(
                           focusNode: _sellIntervalNode,
                           autofocus: false,
@@ -534,6 +574,9 @@ class _StockAddPageState extends State<StockAddPage> {
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
+                            helperText: ' ',
+                            errorText:
+                                !_isValidSellInterval ? _errorMessage : null,
                             hintText: 'Enter a sell interval, e.g. 3%',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
@@ -547,8 +590,15 @@ class _StockAddPageState extends State<StockAddPage> {
                             filled: true,
                             contentPadding: EdgeInsets.all(16),
                           ),
-                          onSubmitted: (_) => FocusScope.of(context)
-                              .requestFocus(_sharesBoughtNode)),
+                          onSubmitted: (_) {
+                            setState(() {
+                              _isValidSellInterval = _isValidNumber(
+                                  _sellIntervalFieldController.text);
+                            });
+
+                            FocusScope.of(context)
+                                .requestFocus(_sharesBoughtNode);
+                          }),
                     ),
                   ],
                 ),
@@ -675,8 +725,12 @@ class _StockAddPageState extends State<StockAddPage> {
                   margin: EdgeInsets.only(top: 10.0, bottom: 5.0),
                   child: RaisedButton(
                     onPressed: () {
-                      _stocksBloc.dispatch(StockValidationRequested(
+                      if(_areAllInputsValid()){
+                        _stocksBloc.dispatch(StockValidationRequested(
                           _symbolFieldController.text, _job));
+                      }else{
+                        _showErrorDialog(context, 'Please check the invalid inputs');
+                      }
                     },
                     color: Colors.white,
                     splashColor: Colors.green[100],
@@ -718,7 +772,10 @@ class _StockAddPageState extends State<StockAddPage> {
         content: Container(
           height: 100.0,
           child: Center(
-            child: Text(message, textAlign: TextAlign.center,),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         title: Container(
@@ -749,6 +806,21 @@ class _StockAddPageState extends State<StockAddPage> {
         titlePadding: EdgeInsets.all(0.0),
       ),
     );
+  }
+
+  bool _isValidNumber(String number) {
+    if (number.isNotEmpty && number != null) {
+      return double.parse(number) > 0.0;
+    } else {
+      return true;
+    }
+  }
+
+  bool _areAllInputsValid() {
+    return _isValidBuyTarget &&
+        _isValidBuyInterval &&
+        _isValidSellTarget &&
+        _isValidSellInterval;
   }
 
   void _createStock() {
