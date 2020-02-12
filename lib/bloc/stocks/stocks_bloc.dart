@@ -26,6 +26,7 @@ class StocksBloc extends BLoC<StocksEvent> {
     }
 
     if (event is StockValidationRequested) {
+      print('DISPATCHED StockValidationRequested EVENT');
       _checkStockDataIsValid(event.symbol, event.job);
     }
     if (event is StockInsertRequested) {
@@ -75,9 +76,12 @@ class StocksBloc extends BLoC<StocksEvent> {
     APIManager.clearSymbols();
     APIManager.setStockSymbol(symbol);
     StocksList stocks = await APIManager.fetchStock();
+    print('CHECKED STOCKS LIST');
     if (stocks.stocksList.isEmpty) {
+      print('STOCK INVALID');
       stocksStateSubject.sink.add(StockValidationChecked(false, job));
     } else {
+      print('STOCK OK!');
       stocksStateSubject.sink.add(StockValidationChecked(true, job));
     }
   }

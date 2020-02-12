@@ -134,22 +134,22 @@ class _StocksPageState extends State<StocksPage> {
                 _stocksBloc.dispatch(ConnectivityStatusRequested());
               }),
           IconButton(
+            icon: Image.asset(
+              'assets/ic_buy.png',
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/buy_stock_page').then((_) {
+                _stocksBloc.dispatch(ConnectivityStatusRequested());
+              });
+            }),
+          IconButton(
               icon: Image.asset(
                 'assets/ic_sell.png',
                 color: Colors.white,
               ),
               onPressed: () {
                 Navigator.pushNamed(context, '/sell_stock_page').then((_) {
-                  _stocksBloc.dispatch(ConnectivityStatusRequested());
-                });
-              }),
-          IconButton(
-              icon: Image.asset(
-                'assets/ic_buy.png',
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/buy_stock_page').then((_) {
                   _stocksBloc.dispatch(ConnectivityStatusRequested());
                 });
               }),

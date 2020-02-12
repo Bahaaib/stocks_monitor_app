@@ -20,6 +20,7 @@ class _StockAddPageState extends State<StockAddPage> {
   int _index;
   bool _isInit = true;
   String _pickedColor = 'Red';
+  bool _hasExecuted = false;
 
   final _symbolFieldController = TextEditingController();
   final _buyTargetFieldController = TextEditingController();
@@ -55,18 +56,22 @@ class _StockAddPageState extends State<StockAddPage> {
   void initState() {
     _stocksBloc.stocksStateSubject.listen((receivedState) {
       if (receivedState is StockValidationChecked) {
-        if (receivedState.isExist) {
-          print('STOCK EXISTS');
-          if (receivedState.job == 'add') {
-            _createStock();
-            _stocksBloc.dispatch(StockInsertRequested(_stock));
+        if (!_hasExecuted) {
+          print('RECEIVED StockValidationChecked STATE');
+          if (receivedState.isExist) {
+            print('STOCK EXISTS');
+            if (receivedState.job == 'add') {
+              _createStock();
+              _stocksBloc.dispatch(StockInsertRequested(_stock));
+            } else {
+              _updateStock();
+              _stocksBloc.dispatch(StockUpdateRequested(_pickedStock));
+            }
           } else {
-            _updateStock();
-            _stocksBloc.dispatch(StockUpdateRequested(_pickedStock));
+            _showErrorDialog(context, 'Stock symbol is not valid');
           }
-        } else {
-          _showErrorDialog(context, 'Stock symbol is not valid');
         }
+        _hasExecuted = true;
       }
       if (receivedState is StockInserted) {
         print('STATE INSERT');
@@ -145,6 +150,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     onPressed: () {
                       if (_areAllInputsValid()) {
+                        print('PRESSED ADD');
                         _stocksBloc.dispatch(StockValidationRequested(
                             _symbolFieldController.text, _job));
                       } else {
@@ -169,6 +175,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     onPressed: () {
                       if (_areAllInputsValid()) {
+                        print('PRESSED UPDATE');
                         _stocksBloc.dispatch(StockValidationRequested(
                             _symbolFieldController.text, _job));
                       } else {
@@ -718,6 +725,7 @@ class _StockAddPageState extends State<StockAddPage> {
                   child: RaisedButton(
                     onPressed: () {
                       if (_areAllInputsValid()) {
+                        print('PRESSED ADD');
                         _stocksBloc.dispatch(StockValidationRequested(
                             _symbolFieldController.text, _job));
                       } else {
