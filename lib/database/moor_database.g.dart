@@ -19,6 +19,7 @@ class Stock extends DataClass implements Insertable<Stock> {
   final String sellInterval;
   final String sharesBought;
   final String sharesSold;
+  final String multiplier;
   final String comments;
   Stock(
       {@required this.id,
@@ -32,6 +33,7 @@ class Stock extends DataClass implements Insertable<Stock> {
       @required this.sellInterval,
       @required this.sharesBought,
       @required this.sharesSold,
+      this.multiplier,
       this.comments});
   factory Stock.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
@@ -60,6 +62,8 @@ class Stock extends DataClass implements Insertable<Stock> {
           .mapFromDatabaseResponse(data['${effectivePrefix}shares_bought']),
       sharesSold: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}shares_sold']),
+      multiplier: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}multiplier']),
       comments: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}comments']),
     );
@@ -78,6 +82,7 @@ class Stock extends DataClass implements Insertable<Stock> {
       sellInterval: serializer.fromJson<String>(json['sellInterval']),
       sharesBought: serializer.fromJson<String>(json['sharesBought']),
       sharesSold: serializer.fromJson<String>(json['sharesSold']),
+      multiplier: serializer.fromJson<String>(json['multiplier']),
       comments: serializer.fromJson<String>(json['comments']),
     );
   }
@@ -96,6 +101,7 @@ class Stock extends DataClass implements Insertable<Stock> {
       'sellInterval': serializer.toJson<String>(sellInterval),
       'sharesBought': serializer.toJson<String>(sharesBought),
       'sharesSold': serializer.toJson<String>(sharesSold),
+      'multiplier': serializer.toJson<String>(multiplier),
       'comments': serializer.toJson<String>(comments),
     };
   }
@@ -132,6 +138,9 @@ class Stock extends DataClass implements Insertable<Stock> {
       sharesSold: sharesSold == null && nullToAbsent
           ? const Value.absent()
           : Value(sharesSold),
+      multiplier: multiplier == null && nullToAbsent
+          ? const Value.absent()
+          : Value(multiplier),
       comments: comments == null && nullToAbsent
           ? const Value.absent()
           : Value(comments),
@@ -150,6 +159,7 @@ class Stock extends DataClass implements Insertable<Stock> {
           String sellInterval,
           String sharesBought,
           String sharesSold,
+          String multiplier,
           String comments}) =>
       Stock(
         id: id ?? this.id,
@@ -163,6 +173,7 @@ class Stock extends DataClass implements Insertable<Stock> {
         sellInterval: sellInterval ?? this.sellInterval,
         sharesBought: sharesBought ?? this.sharesBought,
         sharesSold: sharesSold ?? this.sharesSold,
+        multiplier: multiplier ?? this.multiplier,
         comments: comments ?? this.comments,
       );
   @override
@@ -179,6 +190,7 @@ class Stock extends DataClass implements Insertable<Stock> {
           ..write('sellInterval: $sellInterval, ')
           ..write('sharesBought: $sharesBought, ')
           ..write('sharesSold: $sharesSold, ')
+          ..write('multiplier: $multiplier, ')
           ..write('comments: $comments')
           ..write(')'))
         .toString();
@@ -205,8 +217,12 @@ class Stock extends DataClass implements Insertable<Stock> {
                                       sellInterval.hashCode,
                                       $mrjc(
                                           sharesBought.hashCode,
-                                          $mrjc(sharesSold.hashCode,
-                                              comments.hashCode))))))))))));
+                                          $mrjc(
+                                              sharesSold.hashCode,
+                                              $mrjc(
+                                                  multiplier.hashCode,
+                                                  comments
+                                                      .hashCode)))))))))))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
@@ -222,6 +238,7 @@ class Stock extends DataClass implements Insertable<Stock> {
           other.sellInterval == sellInterval &&
           other.sharesBought == sharesBought &&
           other.sharesSold == sharesSold &&
+          other.multiplier == multiplier &&
           other.comments == comments);
 }
 
@@ -237,6 +254,7 @@ class StocksCompanion extends UpdateCompanion<Stock> {
   final Value<String> sellInterval;
   final Value<String> sharesBought;
   final Value<String> sharesSold;
+  final Value<String> multiplier;
   final Value<String> comments;
   const StocksCompanion({
     this.id = const Value.absent(),
@@ -250,6 +268,7 @@ class StocksCompanion extends UpdateCompanion<Stock> {
     this.sellInterval = const Value.absent(),
     this.sharesBought = const Value.absent(),
     this.sharesSold = const Value.absent(),
+    this.multiplier = const Value.absent(),
     this.comments = const Value.absent(),
   });
   StocksCompanion copyWith(
@@ -264,6 +283,7 @@ class StocksCompanion extends UpdateCompanion<Stock> {
       Value<String> sellInterval,
       Value<String> sharesBought,
       Value<String> sharesSold,
+      Value<String> multiplier,
       Value<String> comments}) {
     return StocksCompanion(
       id: id ?? this.id,
@@ -277,6 +297,7 @@ class StocksCompanion extends UpdateCompanion<Stock> {
       sellInterval: sellInterval ?? this.sellInterval,
       sharesBought: sharesBought ?? this.sharesBought,
       sharesSold: sharesSold ?? this.sharesSold,
+      multiplier: multiplier ?? this.multiplier,
       comments: comments ?? this.comments,
     );
   }
@@ -392,6 +413,18 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
         minTextLength: 1);
   }
 
+  final VerificationMeta _multiplierMeta = const VerificationMeta('multiplier');
+  GeneratedTextColumn _multiplier;
+  @override
+  GeneratedTextColumn get multiplier => _multiplier ??= _constructMultiplier();
+  GeneratedTextColumn _constructMultiplier() {
+    return GeneratedTextColumn(
+      'multiplier',
+      $tableName,
+      true,
+    );
+  }
+
   final VerificationMeta _commentsMeta = const VerificationMeta('comments');
   GeneratedTextColumn _comments;
   @override
@@ -417,6 +450,7 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
         sellInterval,
         sharesBought,
         sharesSold,
+        multiplier,
         comments
       ];
   @override
@@ -498,6 +532,12 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
     } else if (sharesSold.isRequired && isInserting) {
       context.missing(_sharesSoldMeta);
     }
+    if (d.multiplier.present) {
+      context.handle(_multiplierMeta,
+          multiplier.isAcceptableValue(d.multiplier.value, _multiplierMeta));
+    } else if (multiplier.isRequired && isInserting) {
+      context.missing(_multiplierMeta);
+    }
     if (d.comments.present) {
       context.handle(_commentsMeta,
           comments.isAcceptableValue(d.comments.value, _commentsMeta));
@@ -550,6 +590,9 @@ class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
     }
     if (d.sharesSold.present) {
       map['shares_sold'] = Variable<String, StringType>(d.sharesSold.value);
+    }
+    if (d.multiplier.present) {
+      map['multiplier'] = Variable<String, StringType>(d.multiplier.value);
     }
     if (d.comments.present) {
       map['comments'] = Variable<String, StringType>(d.comments.value);

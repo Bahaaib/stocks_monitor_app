@@ -20,6 +20,11 @@ class _StockAddPageState extends State<StockAddPage> {
   int _index;
   bool _isInit = true;
   String _pickedColor = 'Red';
+
+  //A Flag used to prevent other instances of the page in the stack from
+  // Re-Listening to states
+  //DO NOT remove it until you already know an alternative way to stop the
+  //stream after page dispose
   bool _hasExecuted = false;
 
   final _symbolFieldController = TextEditingController();
@@ -29,6 +34,7 @@ class _StockAddPageState extends State<StockAddPage> {
   final _sellIntervalFieldController = TextEditingController();
   final _sharesBoughtFieldController = TextEditingController();
   final _sharesSoldFieldController = TextEditingController();
+  final _multiplierFieldController = TextEditingController();
   final _commentsFieldController = TextEditingController();
 
   final _buyTargetNode = FocusNode();
@@ -37,12 +43,14 @@ class _StockAddPageState extends State<StockAddPage> {
   final _sellIntervalNode = FocusNode();
   final _sharesBoughtNode = FocusNode();
   final _sharesSoldNode = FocusNode();
+  final _multiplierNode = FocusNode();
   final _commentsNode = FocusNode();
 
   bool _isValidBuyTarget = true;
   bool _isValidBuyInterval = true;
   bool _isValidSellTarget = true;
   bool _isValidSellInterval = true;
+  bool _isValidMultiplier = true;
   String _errorMessage = 'Value must be larger than zero';
 
   final List<String> _categoriesList = ['1', '2', '3', '4', '5'];
@@ -55,8 +63,8 @@ class _StockAddPageState extends State<StockAddPage> {
   @override
   void initState() {
     _stocksBloc.stocksStateSubject.listen((receivedState) {
-      if (receivedState is StockValidationChecked) {
-        if (!_hasExecuted) {
+      if (!_hasExecuted) {
+        if (receivedState is StockValidationChecked) {
           print('RECEIVED StockValidationChecked STATE');
           if (receivedState.isExist) {
             print('STOCK EXISTS');
@@ -71,54 +79,40 @@ class _StockAddPageState extends State<StockAddPage> {
             _showErrorDialog(context, 'Stock symbol is not valid');
           }
         }
-        _hasExecuted = true;
-      }
-      if (receivedState is StockInserted) {
-        print('STATE INSERT');
-        if (receivedState.isSuccessful) {
-          if (Navigator.of(context).canPop()) {
-            print('CAN POP');
-            Navigator.of(context).pop();
+        if (receivedState is StockInserted) {
+          print('STATE INSERT');
+          if (receivedState.isSuccessful) {
+            _hasExecuted = true;
+            if (Navigator.of(context).canPop()) {
+              print('CAN POP');
+              Navigator.of(context).pop();
+            }
+          } else {
+            _showErrorDialog(context, 'All fields are required');
           }
-        } else {
-          if (Navigator.of(context).canPop()) {
-            print('CAN POP');
-            Navigator.of(context).pop();
-          }
-          _showErrorDialog(context, 'All fields are required');
         }
-      }
 
-      if (receivedState is StockIsUpdated) {
-        print('STATE UPDATE');
+        if (receivedState is StockIsUpdated) {
+          print('STATE UPDATE');
 
-        if (receivedState.isSuccessful) {
-          if (Navigator.of(context).canPop()) {
-            print('CAN POP');
-            Navigator.of(context).pop();
+          if (receivedState.isSuccessful) {
+            _hasExecuted = true;
+            if (Navigator.of(context).canPop()) {
+              print('CAN POP');
+              Navigator.of(context).pop();
+            }
+          } else {
+            _showErrorDialog(context, 'All fields are required');
           }
-        } else {
-          if (Navigator.of(context).canPop()) {
-            print('CAN POP');
-            Navigator.of(context).pop();
-          }
-          _showErrorDialog(context, 'All fields are required');
         }
-      }
 
-      if (receivedState is StockIsDeleted) {
-        print('STATE DELETE');
-        if (receivedState.isSuccessful) {
-          if (Navigator.of(context).canPop()) {
-            print('CAN POP');
-            Navigator.of(context).pop();
+        if (receivedState is StockIsDeleted) {
+          print('STATE DELETE');
+          if (receivedState.isSuccessful) {
+            _hasExecuted = true;
+          } else {
+            _showErrorDialog(context, 'All fields are required');
           }
-        } else {
-          if (Navigator.of(context).canPop()) {
-            print('CAN POP');
-            Navigator.of(context).pop();
-          }
-          _showErrorDialog(context, 'All fields are required');
         }
       }
     });
@@ -167,6 +161,7 @@ class _StockAddPageState extends State<StockAddPage> {
                     ),
                     onPressed: () {
                       _stocksBloc.dispatch(StockDeleteRequested(_pickedStock));
+                      Navigator.pop(context);
                     }),
                 IconButton(
                     icon: Icon(
@@ -676,7 +671,55 @@ class _StockAddPageState extends State<StockAddPage> {
                             contentPadding: EdgeInsets.all(16),
                           ),
                           onSubmitted: (_) => FocusScope.of(context)
-                              .requestFocus(_commentsNode)),
+                              .requestFocus(_multiplierNode)),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Multiplier:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    Container(
+                      width: 220.0,
+                      height: 60.0,
+                      child: TextField(
+                          focusNode: _multiplierNode,
+                          autofocus: false,
+                          textAlign: TextAlign.center,
+                          controller: _multiplierFieldController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            helperText: ' ',
+                            errorText:
+                                !_isValidMultiplier ? _errorMessage : null,
+                            hintText: 'Value per unit, default: 1000',
+                            hintStyle: TextStyle(fontSize: 12.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
+                            ),
+                            filled: true,
+                            contentPadding: EdgeInsets.all(16),
+                          ),
+                          onSubmitted: (_) {
+                            setState(() {
+                              _isValidMultiplier = _isValidNumber(
+                                  _multiplierFieldController.text);
+                            });
+                            FocusScope.of(context).requestFocus(_commentsNode);
+                          }),
                     ),
                   ],
                 ),
@@ -821,6 +864,7 @@ class _StockAddPageState extends State<StockAddPage> {
     return _isValidBuyTarget &&
         _isValidBuyInterval &&
         _isValidSellTarget &&
+        _isValidMultiplier &&
         _isValidSellInterval;
   }
 
@@ -836,6 +880,9 @@ class _StockAddPageState extends State<StockAddPage> {
         sellInterval: _sellIntervalFieldController.text,
         sharesBought: _sharesBoughtFieldController.text,
         sharesSold: _sharesSoldFieldController.text,
+        multiplier: _multiplierFieldController.text.isEmpty
+            ? '1000'
+            : _multiplierFieldController.text,
         comments: _commentsFieldController.text);
   }
 
@@ -851,6 +898,9 @@ class _StockAddPageState extends State<StockAddPage> {
         sellInterval: _sellIntervalFieldController.text,
         sharesBought: _sharesBoughtFieldController.text,
         sharesSold: _sharesSoldFieldController.text,
+        multiplier: _multiplierFieldController.text.isEmpty
+            ? '1000'
+            : _multiplierFieldController.text,
         comments: _commentsFieldController.text);
   }
 
@@ -862,10 +912,18 @@ class _StockAddPageState extends State<StockAddPage> {
     _sellIntervalFieldController.text = stock.sellInterval;
     _sharesBoughtFieldController.text = stock.sharesBought;
     _sharesSoldFieldController.text = stock.sharesSold;
+    _multiplierFieldController.text = stock.multiplier;
     _commentsFieldController.text = stock.comments;
 
     _pickedColor = stock.color;
     _categoryId = stock.categoryId;
     _targetNameSpinnerValue = stock.targetName;
+  }
+
+  @override
+  void dispose() {
+    print('DISPOSED');
+    _hasExecuted = true;
+    super.dispose();
   }
 }

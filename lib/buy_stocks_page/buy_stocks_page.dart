@@ -264,7 +264,7 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
                         Text(
                             '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
                         Text(
-                            '${(_levelUnits[11 - level] * 1000 ~/ _remoteStocks[_index].regularMarketPrice)}'),
+                            '${(_levelUnits[11 - level] * double.parse(stock.multiplier) ~/ _remoteStocks[_index].regularMarketPrice)}'),
                         Text('${stock.sharesBought}'),
                       ],
                     ),

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:stock_monitor/PODO/APIStock.dart';
@@ -47,14 +46,14 @@ class _StocksPageState extends State<StocksPage> {
         }
       }
       if (receivedState is StocksAreFetched) {
-        if (!_progressDialog.isShowing()) {
-          print('SHOWN');
-          _progressDialog.show();
-        }
         _stocksList.clear();
         _stocksList.addAll(receivedState.stocksList);
         _fillRequestedSymbolsList();
         if (_requestedSymbols.isNotEmpty) {
+          if (!_progressDialog.isShowing()) {
+            print('SHOWN');
+            _progressDialog.show();
+          }
           _stocksBloc.dispatch(StocksRemoteDataRequested(_requestedSymbols));
         } else {
           _progressDialog.dismiss();

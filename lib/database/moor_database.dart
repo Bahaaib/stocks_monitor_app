@@ -26,6 +26,8 @@ class Stocks extends Table {
 
   TextColumn get sharesSold => text().withLength(min: 1)();
 
+  TextColumn get multiplier => text().nullable()();
+
   TextColumn get comments => text().nullable()();
 }
 
@@ -38,7 +40,19 @@ class StocksDatabase extends _$StocksDatabase {
         )));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (Migrator m) {
+      return m.createAllTables();
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from == 2) {
+        await m.addColumn(stocks, stocks.multiplier);
+      }
+    }
+  );
 
   Future<List<Stock>> getAllStocks() => select(stocks).get();
 
