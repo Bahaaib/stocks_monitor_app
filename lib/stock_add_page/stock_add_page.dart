@@ -895,7 +895,7 @@ class _StockAddPageState extends State<StockAddPage> {
     _pickedStock = _pickedStock.copyWith(
         symbol: _symbolFieldController.text.toUpperCase(),
         categoryId: _categoryId,
-        color: _color,
+        color: _pickedColor,
         targetName: _targetNameSpinnerValue,
         buyTarget: _buyTargetFieldController.text,
         buyInterval: _buyIntervalFieldController.text,
