@@ -77,7 +77,7 @@ class StocksBloc extends BLoC<StocksEvent> {
     APIManager.setStockSymbol(symbol);
     StocksList stocks = await APIManager.fetchStock();
     print('CHECKED STOCKS LIST');
-    if (stocks.stocksList.isEmpty) {
+    if (stocks.stocksList.isEmpty || stocks.stocksList[0].regularMarketPrice == null) {
       print('STOCK INVALID');
       stocksStateSubject.sink.add(StockValidationChecked(false, job));
     } else {

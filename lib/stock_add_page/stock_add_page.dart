@@ -854,7 +854,12 @@ class _StockAddPageState extends State<StockAddPage> {
 
   bool _isValidNumber(String number) {
     if (number.isNotEmpty && number != null) {
-      return double.parse(number) > 0.0;
+      //Check if is numeric first
+      if (double.tryParse(number) != null) {
+        return double.parse(number) > 0.0;
+      } else {
+        return false;
+      }
     } else {
       return true;
     }

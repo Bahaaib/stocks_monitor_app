@@ -262,7 +262,7 @@ class _SellStocksPageState extends State<SellStocksPage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                            '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice}'),
+                            '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice.toStringAsFixed(2)}'),
                         Text(
                           '${_levelUnits[level] * double.parse(stock.multiplier) ~/ _remoteStocks[_index].regularMarketPrice}',
                         ),
