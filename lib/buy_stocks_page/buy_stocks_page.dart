@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:stock_monitor/PODO/APIStock.dart';
@@ -68,6 +69,14 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Buy List'),
+        leading: IconButton(iconSize: 16.0,
+          icon: Image.asset(
+            'assets/ic_all.png',
+            color: Colors.white,fit: BoxFit.contain,
+          ),
+          onPressed: () {
+            Navigator.of(context).popUntil(ModalRoute.withName('/'));
+          }),
         actions: <Widget>[
           IconButton(
               icon: Image.asset(

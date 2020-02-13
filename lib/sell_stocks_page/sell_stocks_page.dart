@@ -68,6 +68,14 @@ class _SellStocksPageState extends State<SellStocksPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sell List'),
+        leading: IconButton(
+          icon: Image.asset(
+            'assets/ic_all.png',
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.of(context).popUntil(ModalRoute.withName('/'));
+          }),
         actions: <Widget>[
           IconButton(
               icon: Image.asset(
