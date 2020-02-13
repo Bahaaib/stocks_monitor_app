@@ -271,7 +271,9 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
                     child: Column(
                       children: <Widget>[
                         Text(
-                            '${stock.symbol}, ${_remoteStocks[_index].regularMarketPrice.toStringAsFixed(2)}'),
+                            '${stock.symbol}'),
+                        Text(
+                          '${_remoteStocks[_index].regularMarketPrice.toStringAsFixed(2)}'),
                         Text(
                             '${(_levelUnits[11 - level] * double.parse(stock.multiplier) ~/ _remoteStocks[_index].regularMarketPrice)}'),
                         Text('${stock.sharesBought}'),
