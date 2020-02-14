@@ -472,7 +472,7 @@ class _StockAddPageState extends State<StockAddPage> {
                             helperText: ' ',
                             errorText:
                                 !_isValidBuyInterval ? _errorMessage : null,
-                            hintText: 'Enter a number between 0 and 100',
+                            hintText: 'Enter a buy interval number, e.g: 5 for 5%',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -570,7 +570,7 @@ class _StockAddPageState extends State<StockAddPage> {
                             helperText: ' ',
                             errorText:
                                 !_isValidSellInterval ? _errorMessage : null,
-                            hintText: 'Enter a number between 0 and 100',
+                            hintText: 'Enter a sell interval number, e.g. 3 for 3%',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
