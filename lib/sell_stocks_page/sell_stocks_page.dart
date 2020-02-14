@@ -67,16 +67,19 @@ class _SellStocksPageState extends State<SellStocksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Sell List'),
-        leading: IconButton(
-          icon: Image.asset(
-            'assets/ic_all.png',
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.of(context).popUntil(ModalRoute.withName('/'));
-          }),
         actions: <Widget>[
+          IconButton(
+              iconSize: 16.0,
+              icon: Image.asset(
+                'assets/ic_all.png',
+                color: Colors.white,
+                fit: BoxFit.contain,
+              ),
+              onPressed: () {
+                Navigator.of(context).popUntil(ModalRoute.withName('/'));
+              }),
           IconButton(
               icon: Image.asset(
                 'assets/ic_buy.png',
@@ -269,10 +272,9 @@ class _SellStocksPageState extends State<SellStocksPage> {
                   child: FittedBox(
                     child: Column(
                       children: <Widget>[
+                        Text('${stock.symbol}'),
                         Text(
-                          '${stock.symbol}'),
-                        Text(
-                          '${_remoteStocks[_index].regularMarketPrice.toStringAsFixed(2)}'),
+                            '${_remoteStocks[_index].regularMarketPrice.toStringAsFixed(2)}'),
                         Text(
                           '${_levelUnits[level] * double.parse(stock.multiplier) ~/ _remoteStocks[_index].regularMarketPrice}',
                         ),

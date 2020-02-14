@@ -68,16 +68,17 @@ class _BuyStocksPageState extends State<BuyStocksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Buy List'),
-        leading: IconButton(iconSize: 16.0,
-          icon: Image.asset(
-            'assets/ic_all.png',
-            color: Colors.white,fit: BoxFit.contain,
-          ),
-          onPressed: () {
-            Navigator.of(context).popUntil(ModalRoute.withName('/'));
-          }),
         actions: <Widget>[
+          IconButton(iconSize: 16.0,
+            icon: Image.asset(
+              'assets/ic_all.png',
+              color: Colors.white,fit: BoxFit.contain,
+            ),
+            onPressed: () {
+              Navigator.of(context).popUntil(ModalRoute.withName('/'));
+            }),
           IconButton(
               icon: Image.asset(
                 'assets/ic_sell.png',
