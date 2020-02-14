@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
     GetIt.instance.registerSingleton<StocksBloc>(StocksBloc());
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Stocks Monitor',
       theme: ThemeData(
         primarySwatch: Colors.green,

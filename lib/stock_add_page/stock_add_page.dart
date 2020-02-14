@@ -423,7 +423,7 @@ class _StockAddPageState extends State<StockAddPage> {
                         decoration: InputDecoration(
                           helperText: ' ',
                           errorText: !_isValidBuyTarget ? _errorMessage : null,
-                          hintText: 'Enter a buy target price, e.g. 180',
+                          hintText: 'Enter a price, e.g. 180',
                           hintStyle: TextStyle(fontSize: 12.0),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8.0),
@@ -472,7 +472,7 @@ class _StockAddPageState extends State<StockAddPage> {
                             helperText: ' ',
                             errorText:
                                 !_isValidBuyInterval ? _errorMessage : null,
-                            hintText: 'Enter a buy interval number, e.g: 5 for 5%',
+                            hintText: 'Enter a number, e.g. 5 for 5%',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -521,7 +521,7 @@ class _StockAddPageState extends State<StockAddPage> {
                             helperText: ' ',
                             errorText:
                                 !_isValidSellTarget ? _errorMessage : null,
-                            hintText: 'Enter a sell target price, e.g. 250',
+                            hintText: 'Enter a price, e.g. 250',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -570,7 +570,7 @@ class _StockAddPageState extends State<StockAddPage> {
                             helperText: ' ',
                             errorText:
                                 !_isValidSellInterval ? _errorMessage : null,
-                            hintText: 'Enter a sell interval number, e.g. 3 for 3%',
+                            hintText: 'Enter a number, e.g. 3 for 3%',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -617,7 +617,7 @@ class _StockAddPageState extends State<StockAddPage> {
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            hintText: '# of shares bought, e.g: 1000',
+                            hintText: 'Enter a number, e.g. 1000',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -657,7 +657,7 @@ class _StockAddPageState extends State<StockAddPage> {
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
-                            hintText: '# of shares sold, e.g: 500',
+                            hintText: 'Enter a number, e.g. 1000',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
@@ -700,7 +700,7 @@ class _StockAddPageState extends State<StockAddPage> {
                             helperText: ' ',
                             errorText:
                                 !_isValidMultiplier ? _errorMessage : null,
-                            hintText: 'Value per unit, default: 1000',
+                            hintText: 'Enter a number, e.g. 1000',
                             hintStyle: TextStyle(fontSize: 12.0),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8.0),
